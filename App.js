@@ -1,6 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { View, Text, StyleSheet,} from "react-native";
 import Page from './views/page';
+
 
 export default function App() {
   return (
