@@ -1,23 +1,30 @@
+import React, { useEffect, useState} from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { View, Text, StyleSheet,} from "react-native";
+import { View, Text, Button, Alert} from "react-native";
+import {css} from './assets/css/Css';
 import Page from './views/page';
 
-
 export default function App() {
+    const [product,setProduct]=useState('teste');
+    const [quantity,setQuantity]=useState(0);
+
+    useEffect(()=>{
+       if(quantity > 0){
+           Alert.alert('Candidatura Feita com Sucesso');
+       }
+    },[quantity]);
+
+    const props={
+        empresa:'Ejobs',
+        produto: product,
+        quantidade: quantity
+    };
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-      <Page/>
+    <View style={css.container}>
+        <Text>{product}</Text>
+        <Page {...props} />
+        <Button title='Candidatar-se' onPress={()=>setQuantity(quantity + 1)} />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
