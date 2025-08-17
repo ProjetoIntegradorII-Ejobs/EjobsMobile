@@ -7,11 +7,11 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Home from './views/Home';
 import Login from './views/Login';
 
+const Stack = createStackNavigator();
+
 export default function App() {
 
-  const Stack = createStackNavigator();
-
-  return (
+    return (
       <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen name="Home" component={Home} />
