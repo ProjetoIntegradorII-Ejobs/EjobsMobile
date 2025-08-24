@@ -4,8 +4,7 @@ import { View, Text, Button, Alert} from "react-native";
 import {css} from './assets/css/Css';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import Home from './views/Home';
-import Login from './views/Login';
+import { Home, Login } from './views';
 
 const Stack = createNativeStackNavigator();
 
@@ -21,7 +20,7 @@ export default function App() {
         <Stack.Screen 
           name="Login" 
           component={Login} 
-          options={{ title: 'Acesso' }}
+          options={{ title: 'Acesso', headerShown: false }}
         />
       </Stack.Navigator>
     </NavigationContainer>
