@@ -41,7 +41,6 @@ const css = StyleSheet.create({
     fontSize: 22,
     color:"#333"  
   }
-
 });
 
 export {css}; 
