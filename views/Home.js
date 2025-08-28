@@ -17,7 +17,13 @@ export default function Home({ navigation }) {
         >
           <Text style={homeStyles.buttonText}> Login</Text>
         </TouchableOpacity>
-        
+        <TouchableOpacity 
+          style={homeStyles.button}
+          onPress={() => navigation.navigate('Vagas')}
+>
+          <Text style={homeStyles.buttonText}>Ver Vagas</Text>
+        </TouchableOpacity>
+
       </View>
     </View>
   );
