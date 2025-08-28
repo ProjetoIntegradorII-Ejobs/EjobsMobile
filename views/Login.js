@@ -54,7 +54,6 @@ export default function Login({ navigation }) {
             <View style={loginStyles.inputContainer}>
               <Text style={loginStyles.inputLabel}>Email</Text>
               <View style={loginStyles.inputWrapper}>
-                <Text style={loginStyles.inputIcon}>📧</Text>
                 <TextInput
                   style={loginStyles.input}
                   placeholder="Informe seu email"
