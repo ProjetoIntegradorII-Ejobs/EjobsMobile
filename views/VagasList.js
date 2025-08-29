@@ -44,7 +44,6 @@ export default function VagasList({navigation}) {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -72,3 +71,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
+

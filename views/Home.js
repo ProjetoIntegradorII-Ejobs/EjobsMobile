@@ -13,9 +13,9 @@ export default function Home({ navigation }) {
       <View style={homeStyles.buttonContainer}>
         <TouchableOpacity 
           style={homeStyles.button}
-          onPress={() => navigation.navigate('Jobs')}
+          onPress={() => navigation.navigate('Login')}
         >
-          <Text style={homeStyles.buttonText}>Ver Vagas</Text>
+          <Text style={homeStyles.buttonText}>Login</Text>
         </TouchableOpacity>
         <TouchableOpacity 
           style={homeStyles.button}
