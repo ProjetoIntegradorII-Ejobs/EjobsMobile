@@ -10,23 +10,40 @@ import {
   Platform
 } from 'react-native';
 import { loginStyles } from '../assets/css/LoginStyles';
+import LoginController from '../controllers/LoginController';
 
 export default function Login({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showError, setShowError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!email || !password) {
       setShowError(true);
+      setErrorMessage('Preencha todos os campos');
       return;
     }
-    console.log('Login attempt:', { email, password });
-    setShowError(false);
+
+    const result = await LoginController.login(email, password);
+
+    if (result.error) {
+      setShowError(true);
+      setErrorMessage(result.error);
+    } else {
+      setShowError(false);
+      console.log('Login bem-sucedido:', result);
+
+      if (result.usuario && result.usuario.tipo === 'Candidato') {
+        navigation.replace('UsuarioComum');
+      } else {
+        navigation.replace('Home');
+      }
+    }
   };
 
   const handleRegister = () => {
-    console.log('Navigate to register');
+    navigation.navigate('Register');
   };
 
   return (
@@ -35,19 +52,17 @@ export default function Login({ navigation }) {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={loginStyles.container}
       >
-    
         <ScrollView 
           contentContainerStyle={loginStyles.mainContent}
           showsVerticalScrollIndicator={false}
         >
-          
           <View style={loginStyles.loginCard}>
             <Text style={loginStyles.loginTitle}>Bem-vindo ao E-Jobs</Text>
             <Text style={loginStyles.loginSubtitle}>Faça login para continuar</Text>
             
             {showError && (
               <View style={loginStyles.errorContainer}>
-                <Text style={loginStyles.errorText}>Preencha todos os campos</Text>
+                <Text style={loginStyles.errorText}>{errorMessage}</Text>
               </View>
             )}
 
