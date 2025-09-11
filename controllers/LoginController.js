@@ -3,7 +3,7 @@ import api from '../config/api';
 const LoginController = {
   async login(email, senha) {
     try {
-      const response = await api.post('LoginApiController.php?action=login', {
+      const response = await api.post('LoginApiController.php?action=logon', {
         email,
         senha
       });
@@ -11,11 +11,11 @@ const LoginController = {
       return response.data; 
     } catch (error) {
       if (error.response) {
-        return { error: error.response.data.error };
+        return error.response.data;
       } else if (error.request) {
-        return { error: "Sem resposta do servidor" };
+        return { success: false, errors: ["Sem resposta do servidor"] };
       } else {
-        return { error: error.message };
+        return { success: false, errors: [error.message] };
       }
     }
   }

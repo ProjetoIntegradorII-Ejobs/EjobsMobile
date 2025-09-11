@@ -27,14 +27,14 @@ export default function Login({ navigation }) {
 
     const result = await LoginController.login(email, password);
 
-    if (result.error) {
+    if (!result.success) {
       setShowError(true);
-      setErrorMessage(result.error);
+      setErrorMessage(result.errors[0]);
     } else {
       setShowError(false);
       console.log('Login bem-sucedido:', result);
 
-      if (result.usuario && result.usuario.tipo === 'Candidato') {
+      if (result.usuario && result.usuario.tipo === 1) {
         navigation.replace('UsuarioComum');
       } else {
         navigation.replace('Home');
