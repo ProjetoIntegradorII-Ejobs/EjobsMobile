@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Home, Login } from './views';
+import { Home, Login, Cadastro } from './views';
 import VagasList from './views/VagasList';
 import UsuarioComum from './views/UsuarioComum';
 
@@ -20,6 +20,11 @@ export default function App() {
           name="Login" 
           component={Login} 
           options={{ title: 'Acesso', headerShown: false }}
+        />
+        <Stack.Screen 
+          name="Cadastro" 
+          component={Cadastro} 
+          options={{ title: 'Cadastro', headerShown: false }}
         />
         <Stack.Screen
           name="Vagas" 

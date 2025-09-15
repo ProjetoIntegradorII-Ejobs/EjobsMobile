@@ -4,3 +4,4 @@ export { loginStyles } from './LoginStyles';
 export { homeStyles } from './HomeStyles';
 export { globalStyles } from './GlobalStyles';
 export { jobsStyles } from './JobsStyles';
+export { cadastroStyles } from './CadastroStyles';
