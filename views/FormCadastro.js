@@ -10,7 +10,7 @@ import {
   Platform,
   Alert
 } from 'react-native';
-import { registerStyles } from '../assets/css/CadastroStyles';
+import { cadastroStyles } from '../assets/css/CadastroStyles';
 import CadastroController from '../controllers/CadastroController';
 
 export default function Cadastrar({ navigation }) {
@@ -35,7 +35,6 @@ export default function Cadastrar({ navigation }) {
   };
 
   const handleRegister = async () => {
-    // Validação básica
     if (!formData.nome || !formData.email || !formData.senha || !formData.conf_senha) {
       Alert.alert('Erro', 'Preencha os campos obrigatórios');
       return;
@@ -62,25 +61,30 @@ export default function Cadastrar({ navigation }) {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={cadastroStyles.container}>
       <KeyboardAvoidingView 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}
       >
         <ScrollView 
-          contentContainerStyle={registerStyles.mainContent}
+          contentContainerStyle={cadastroStyles.scrollContent}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
-          <View style={registerStyles.registerCard}>
-            <Text style={registerStyles.registerTitle}>Cadastro de Usuário</Text>
-            <Text style={registerStyles.registerSubtitle}>Preencha os dados abaixo</Text>
+          {/* Cabeçalho */}
+          <View style={cadastroStyles.header}>
+            <Text style={cadastroStyles.title}>Cadastro de Usuário</Text>
+          </View>
+
+          {/* Card de formulário */}
+          <View style={cadastroStyles.formContainer}>
+            <Text style={cadastroStyles.sectionTitle}>Preencha os dados abaixo</Text>
 
             {/* Nome */}
-            <View style={registerStyles.inputContainer}>
-              <Text style={registerStyles.inputLabel}>Nome</Text>
+            <View style={cadastroStyles.inputGroup}>
+              <Text style={cadastroStyles.label}>Nome</Text>
               <TextInput
-                style={registerStyles.input}
+                style={cadastroStyles.input}
                 placeholder="Informe o nome"
                 value={formData.nome}
                 onChangeText={text => handleChange('nome', text)}
@@ -88,10 +92,10 @@ export default function Cadastrar({ navigation }) {
             </View>
 
             {/* Email */}
-            <View style={registerStyles.inputContainer}>
-              <Text style={registerStyles.inputLabel}>Email</Text>
+            <View style={cadastroStyles.inputGroup}>
+              <Text style={cadastroStyles.label}>Email</Text>
               <TextInput
-                style={registerStyles.input}
+                style={cadastroStyles.input}
                 placeholder="Informe o email"
                 keyboardType="email-address"
                 autoCapitalize="none"
@@ -101,10 +105,10 @@ export default function Cadastrar({ navigation }) {
             </View>
 
             {/* Senha */}
-            <View style={registerStyles.inputContainer}>
-              <Text style={registerStyles.inputLabel}>Senha</Text>
+            <View style={cadastroStyles.inputGroup}>
+              <Text style={cadastroStyles.label}>Senha</Text>
               <TextInput
-                style={registerStyles.input}
+                style={cadastroStyles.input}
                 placeholder="Informe a senha"
                 secureTextEntry
                 value={formData.senha}
@@ -113,10 +117,10 @@ export default function Cadastrar({ navigation }) {
             </View>
 
             {/* Confirmação de senha */}
-            <View style={registerStyles.inputContainer}>
-              <Text style={registerStyles.inputLabel}>Confirme a Senha</Text>
+            <View style={cadastroStyles.inputGroup}>
+              <Text style={cadastroStyles.label}>Confirme a Senha</Text>
               <TextInput
-                style={registerStyles.input}
+                style={cadastroStyles.input}
                 placeholder="Repita a senha"
                 secureTextEntry
                 value={formData.conf_senha}
@@ -125,10 +129,10 @@ export default function Cadastrar({ navigation }) {
             </View>
 
             {/* Documento */}
-            <View style={registerStyles.inputContainer}>
-              <Text style={registerStyles.inputLabel}>Documento</Text>
+            <View style={cadastroStyles.inputGroup}>
+              <Text style={cadastroStyles.label}>Documento</Text>
               <TextInput
-                style={registerStyles.input}
+                style={cadastroStyles.input}
                 placeholder="Informe CPF ou CNPJ"
                 value={formData.documento}
                 onChangeText={text => handleChange('documento', text)}
@@ -136,10 +140,10 @@ export default function Cadastrar({ navigation }) {
             </View>
 
             {/* Telefone */}
-            <View style={registerStyles.inputContainer}>
-              <Text style={registerStyles.inputLabel}>Telefone</Text>
+            <View style={cadastroStyles.inputGroup}>
+              <Text style={cadastroStyles.label}>Telefone</Text>
               <TextInput
-                style={registerStyles.input}
+                style={cadastroStyles.input}
                 placeholder="Informe o telefone"
                 keyboardType="phone-pad"
                 value={formData.telefone}
@@ -148,22 +152,22 @@ export default function Cadastrar({ navigation }) {
             </View>
 
             {/* Endereço */}
-            <View style={registerStyles.inputContainer}>
-              <Text style={registerStyles.inputLabel}>Endereço</Text>
+            <View style={cadastroStyles.inputGroup}>
+              <Text style={cadastroStyles.label}>Endereço</Text>
               <TextInput
-                style={registerStyles.input}
+                style={cadastroStyles.input}
                 placeholder="Logradouro"
                 value={formData.endLogradouro}
                 onChangeText={text => handleChange('endLogradouro', text)}
               />
               <TextInput
-                style={registerStyles.input}
+                style={cadastroStyles.input}
                 placeholder="Bairro"
                 value={formData.endBairro}
                 onChangeText={text => handleChange('endBairro', text)}
               />
               <TextInput
-                style={registerStyles.input}
+                style={cadastroStyles.input}
                 placeholder="Número"
                 value={formData.endNumero}
                 onChangeText={text => handleChange('endNumero', text)}
@@ -171,10 +175,10 @@ export default function Cadastrar({ navigation }) {
             </View>
 
             {/* Descrição */}
-            <View style={registerStyles.inputContainer}>
-              <Text style={registerStyles.inputLabel}>Descrição</Text>
+            <View style={cadastroStyles.inputGroup}>
+              <Text style={cadastroStyles.label}>Descrição</Text>
               <TextInput
-                style={[registerStyles.input, { height: 80 }]}
+                style={[cadastroStyles.input, cadastroStyles.textArea]}
                 placeholder="Informe uma descrição"
                 multiline
                 value={formData.descricao}
@@ -182,15 +186,20 @@ export default function Cadastrar({ navigation }) {
               />
             </View>
 
-            <TouchableOpacity style={registerStyles.registerButton} onPress={handleRegister}>
-              <Text style={registerStyles.registerButtonText}>Cadastrar</Text>
+            {/* Botão Cadastrar */}
+            <TouchableOpacity 
+              style={[cadastroStyles.button, cadastroStyles.saveButton]} 
+              onPress={handleRegister}
+            >
+              <Text style={cadastroStyles.buttonText}>Cadastrar</Text>
             </TouchableOpacity>
 
-            <View style={registerStyles.loginContainer}>
-              <Text style={registerStyles.loginText}>
+            {/* Link para login */}
+            <View style={{ marginTop: 16, alignItems: 'center' }}>
+              <Text>
                 Já tem conta?{' '}
                 <Text 
-                  style={registerStyles.loginLink} 
+                  style={{ color: '#2563eb', fontWeight: '700' }} 
                   onPress={() => navigation.navigate('Login')}
                 >
                   Faça login
