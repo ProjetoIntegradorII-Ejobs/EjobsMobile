@@ -20,8 +20,15 @@ export default function Home({ navigation }) {
         <TouchableOpacity 
           style={homeStyles.button}
           onPress={() => navigation.navigate('Vagas')}
->
+        >
           <Text style={homeStyles.buttonText}>Ver Vagas</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={homeStyles.button}
+          onPress={() => navigation.navigate('FormCadastro')}
+        >
+          <Text style={homeStyles.buttonText}>Cadastro</Text>
         </TouchableOpacity>
 
       </View>
