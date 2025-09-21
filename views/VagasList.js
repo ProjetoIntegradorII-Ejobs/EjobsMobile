@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, FlatList, ActivityIndicator, StyleSheet, TouchableOpacity } from 'react-native';
 import VagasController from '../controllers/VagasController';
 
-export default function VagasList({navigation}) {
+export default function VagasList({ navigation }) {
   const [vagas, setVagas] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -34,16 +34,20 @@ export default function VagasList({navigation}) {
         data={vagas}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <View style={styles.card}>
+          <TouchableOpacity 
+            style={styles.card} 
+            onPress={() => navigation.navigate("VagaDetalhes", { id: item.id })}
+          >
             <Text style={styles.titulo}>{item.titulo}</Text>
-            <Text>{item.descricao}</Text>
+            <Text numberOfLines={2}>{item.descricao}</Text>
             <Text style={styles.salario}>Salário: R$ {item.salario}</Text>
-          </View>
+          </TouchableOpacity>
         )}
       />
     </View>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -71,4 +75,3 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
-
