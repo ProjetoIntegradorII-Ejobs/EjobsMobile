@@ -3,7 +3,7 @@ import api from '../config/api';
 const LoginController = {
   async login(email, senha) {
     try {
-      const response = await api.post('LoginApiController.php?action=logon', {
+      const response = await api.post('/api/LoginApiController.php?action=logon', {
         email,
         senha
       });

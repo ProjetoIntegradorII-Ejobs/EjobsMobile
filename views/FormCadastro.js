@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Text, 
   View, 
@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { cadastroStyles } from '../assets/css/CadastroStyles';
 import CadastroController from '../controllers/CadastroController';
+import { Picker } from '@react-native-picker/picker';
 
 export default function Cadastrar({ navigation }) {
   const [formData, setFormData] = useState({
@@ -30,9 +31,48 @@ export default function Cadastrar({ navigation }) {
     telefone: '',
   });
 
-  const handleChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
+  const [estados, setEstados] = useState([]);
+  const [cidades, setCidades] = useState([]);
+  const [papeis, setPapeis] = useState([]);
+
+const handleChange = async (field, value) => {
+  setFormData(prev => ({ ...prev, [field]: value }));
+
+  if (field === 'estado') {
+    // resetar cidade e atualizar estado
+    setFormData(prev => ({ ...prev, estado: value, cidade: '' }));
+
+    try {
+      const cidadesEstado = await CadastroController.carregaCidades(value);
+      console.log("Cidades recebidas:", cidadesEstado);
+      setCidades(Array.isArray(cidadesEstado) ? cidadesEstado : []);
+    } catch (error) {
+      console.error("Erro ao carregar cidades:", error);
+      setCidades([]);
+      Alert.alert('Erro', 'Falha ao carregar cidades do estado selecionado');
+    }
+  }
+};
+
+
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const data = await CadastroController.create();
+        if (data.success) {
+          setEstados(data.estados || []);
+          setPapeis(data.papeis || []);
+        } else {
+          Alert.alert('Erro', 'Não foi possível carregar dados do cadastro');
+        }
+      } catch (err) {
+        console.error(err);
+        Alert.alert('Erro', 'Não foi possível conectar ao servidor');
+      }
+    };
+    loadData();
+  }, []);
 
   const handleRegister = async () => {
     if (!formData.nome || !formData.email || !formData.senha || !formData.conf_senha) {
@@ -52,7 +92,7 @@ export default function Cadastrar({ navigation }) {
         Alert.alert('Erro', result.errors ? result.errors[0] : 'Erro ao cadastrar usuário');
       } else {
         Alert.alert('Sucesso', 'Cadastro realizado com sucesso!');
-        navigation.replace('Login');
+        navigation.replace('UsuarioComum');
       }
     } catch (error) {
       Alert.alert('Erro', 'Não foi possível conectar ao servidor');
@@ -71,14 +111,67 @@ export default function Cadastrar({ navigation }) {
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
-          {/* Cabeçalho */}
           <View style={cadastroStyles.header}>
             <Text style={cadastroStyles.title}>Cadastro de Usuário</Text>
           </View>
 
-          {/* Card de formulário */}
           <View style={cadastroStyles.formContainer}>
             <Text style={cadastroStyles.sectionTitle}>Preencha os dados abaixo</Text>
+            
+            {/* Papel */}
+            <View style={cadastroStyles.inputGroup}>
+              <Text style={cadastroStyles.label}>
+                Papel<Text style={cadastroStyles.requiredIndicator}> *</Text>
+              </Text>
+              <View style={cadastroStyles.pickerContainer}>
+                <Picker
+                  selectedValue={formData.tipoUsuario}
+                  onValueChange={(value) => handleChange('tipoUsuario', value)}
+                  style={cadastroStyles.picker}
+                >
+                  <Picker.Item label="Selecione o papel" value="" />
+                  {papeis.map((papel) => (
+                    <Picker.Item key={papel.id} label={papel.nome} value={papel.id.toString()} />
+                  ))}
+                </Picker>
+              </View>
+            </View>
+
+            {/* Estado */}
+            <View style={cadastroStyles.inputGroup}>
+              <Text style={cadastroStyles.label}>Estado</Text>
+              <View style={cadastroStyles.pickerContainer}>
+               <Picker
+  selectedValue={formData.estado}
+  onValueChange={(value) => handleChange('estado', value)}
+  style={cadastroStyles.picker}
+>
+  <Picker.Item label="Selecione o estado" value="" />
+  {estados.map((estado) => (
+    <Picker.Item key={estado.codigo_uf} label={estado.nome} value={estado.codigo_uf.toString()} />
+  ))}
+</Picker>
+
+              </View>
+            </View>
+
+            {/* Cidade */}
+            <View style={cadastroStyles.inputGroup}>
+              <Text style={cadastroStyles.label}>Cidade</Text>
+              <View style={cadastroStyles.pickerContainer}>
+                <Picker
+                  selectedValue={formData.cidade}
+                  onValueChange={(value) => handleChange('cidade', value)}
+                  style={cadastroStyles.picker}
+                  enabled={cidades.length > 0}
+                >
+                  <Picker.Item label="Selecione a cidade" value="" />
+                  {cidades.map((cidade) => (
+                    <Picker.Item key={cidade.id} label={cidade.nome} value={cidade.id.toString()} />
+                  ))}
+                </Picker>
+              </View>
+            </View>
 
             {/* Nome */}
             <View style={cadastroStyles.inputGroup}>
@@ -97,8 +190,6 @@ export default function Cadastrar({ navigation }) {
               <TextInput
                 style={cadastroStyles.input}
                 placeholder="Informe o email"
-                keyboardType="email-address"
-                autoCapitalize="none"
                 value={formData.email}
                 onChangeText={text => handleChange('email', text)}
               />
@@ -116,12 +207,12 @@ export default function Cadastrar({ navigation }) {
               />
             </View>
 
-            {/* Confirmação de senha */}
+            {/* Confirmar senha */}
             <View style={cadastroStyles.inputGroup}>
-              <Text style={cadastroStyles.label}>Confirme a Senha</Text>
+              <Text style={cadastroStyles.label}>Confirmar Senha</Text>
               <TextInput
                 style={cadastroStyles.input}
-                placeholder="Repita a senha"
+                placeholder="Confirme a senha"
                 secureTextEntry
                 value={formData.conf_senha}
                 onChangeText={text => handleChange('conf_senha', text)}
@@ -145,7 +236,6 @@ export default function Cadastrar({ navigation }) {
               <TextInput
                 style={cadastroStyles.input}
                 placeholder="Informe o telefone"
-                keyboardType="phone-pad"
                 value={formData.telefone}
                 onChangeText={text => handleChange('telefone', text)}
               />
@@ -153,22 +243,30 @@ export default function Cadastrar({ navigation }) {
 
             {/* Endereço */}
             <View style={cadastroStyles.inputGroup}>
-              <Text style={cadastroStyles.label}>Endereço</Text>
+              <Text style={cadastroStyles.label}>Logradouro</Text>
               <TextInput
                 style={cadastroStyles.input}
-                placeholder="Logradouro"
+                placeholder="Rua, Avenida..."
                 value={formData.endLogradouro}
                 onChangeText={text => handleChange('endLogradouro', text)}
               />
+            </View>
+
+            <View style={cadastroStyles.inputGroup}>
+              <Text style={cadastroStyles.label}>Bairro</Text>
               <TextInput
                 style={cadastroStyles.input}
-                placeholder="Bairro"
+                placeholder="Informe o bairro"
                 value={formData.endBairro}
                 onChangeText={text => handleChange('endBairro', text)}
               />
+            </View>
+
+            <View style={cadastroStyles.inputGroup}>
+              <Text style={cadastroStyles.label}>Número</Text>
               <TextInput
                 style={cadastroStyles.input}
-                placeholder="Número"
+                placeholder="Informe o número"
                 value={formData.endNumero}
                 onChangeText={text => handleChange('endNumero', text)}
               />
@@ -178,15 +276,13 @@ export default function Cadastrar({ navigation }) {
             <View style={cadastroStyles.inputGroup}>
               <Text style={cadastroStyles.label}>Descrição</Text>
               <TextInput
-                style={[cadastroStyles.input, cadastroStyles.textArea]}
-                placeholder="Informe uma descrição"
-                multiline
+                style={cadastroStyles.input}
+                placeholder="Descrição opcional"
                 value={formData.descricao}
                 onChangeText={text => handleChange('descricao', text)}
               />
             </View>
 
-            {/* Botão Cadastrar */}
             <TouchableOpacity 
               style={[cadastroStyles.button, cadastroStyles.saveButton]} 
               onPress={handleRegister}

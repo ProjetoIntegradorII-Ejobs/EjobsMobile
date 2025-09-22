@@ -43,7 +43,7 @@ export default function Login({ navigation }) {
   };
 
   const handleRegister = () => {
-    navigation.navigate('Cadastro');
+    navigation.navigate('FormCadastro');
   };
 
   return (
