@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Home, Login, Cadastro, FormCadastro } from './views';
 import VagasList from './views/VagasList';
 import UsuarioComum from './views/UsuarioComum';
+import VagaDetalhes from './views/VagaDetalhes';
 
 const Stack = createNativeStackNavigator();
 
@@ -26,7 +27,7 @@ export default function App() {
           component={Cadastro} 
           options={{ title: 'Cadastro', headerShown: false }}
         />
-         <Stack.Screen 
+        <Stack.Screen 
           name="FormCadastro" 
           component={FormCadastro} 
           options={{ title: 'Cadastro', headerShown: false }}
@@ -40,6 +41,12 @@ export default function App() {
           name="UsuarioComum"
           component={UsuarioComum}
           options={{ title: 'Usuário Comum' }}
+        />
+       
+        <Stack.Screen
+          name="VagaDetalhes"
+          component={VagaDetalhes}
+          options={{ title: 'Detalhes da Vaga' }}
         />
       </Stack.Navigator>
     </NavigationContainer>
