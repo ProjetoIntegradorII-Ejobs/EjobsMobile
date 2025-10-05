@@ -1,53 +1,51 @@
-import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Home, Login, Cadastro, FormCadastro } from './views';
-import VagasList from './views/VagasList';
-import UsuarioComum from './views/UsuarioComum';
-import VagaDetalhes from './views/VagaDetalhes';
+import React, { useEffect, useState } from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Home from "./views/Home";
+import Login from "./views/Login";
+import Cadastro from "./views/Cadastro";
+import FormCadastro from "./views/FormCadastro";
+import VagasList from "./views/VagasList";
+import UsuarioComum from "./views/UsuarioComum";
+import VagaDetalhes from "./views/VagaDetalhes";
+import { ActivityIndicator, View } from "react-native";
+import Perfil from "./views/Perfil";
+
+console.log("LOGIN COMPONENT =>", Login);
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+  const [initialRoute, setInitialRoute] = useState(null);
+
+  useEffect(() => {
+    const verificarLoginSalvo = async () => {
+      const usuario = await AsyncStorage.getItem("usuarioLogado");
+      setInitialRoute(usuario ? "UsuarioComum" : "Home");
+    };
+    verificarLoginSalvo();
+  }, []);
+
+  if (!initialRoute) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" color="#2563eb" />
+      </View>
+    );
+  }
+
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen 
-          name="Home" 
-          component={Home} 
-          options={{ title: 'Página Inicial' }}
-        />
-        <Stack.Screen 
-          name="Login" 
-          component={Login} 
-          options={{ title: 'Acesso', headerShown: false }}
-        />
-        <Stack.Screen 
-          name="Cadastro" 
-          component={Cadastro} 
-          options={{ title: 'Cadastro', headerShown: false }}
-        />
-        <Stack.Screen 
-          name="FormCadastro" 
-          component={FormCadastro} 
-          options={{ title: 'Cadastro', headerShown: false }}
-        />
-        <Stack.Screen
-          name="Vagas" 
-          component={VagasList} 
-          options={{ title: 'Vagas', headerShown: false }}
-        />
-        <Stack.Screen
-          name="UsuarioComum"
-          component={UsuarioComum}
-          options={{ title: 'Usuário Comum' }}
-        />
-       
-        <Stack.Screen
-          name="VagaDetalhes"
-          component={VagaDetalhes}
-          options={{ title: 'Detalhes da Vaga' }}
-        />
+      <Stack.Navigator initialRouteName={initialRoute}>
+        <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen name="Login" component={Login} />
+        <Stack.Screen name="Cadastro" component={Cadastro} />
+        <Stack.Screen name="FormCadastro" component={FormCadastro} />
+        <Stack.Screen name="Vagas" component={VagasList} />
+        <Stack.Screen name="UsuarioComum" component={UsuarioComum} />
+        <Stack.Screen name="VagaDetalhes" component={VagaDetalhes} />
+        <Stack.Screen name="Perfil" component={Perfil} options={{ headerShown: false }}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

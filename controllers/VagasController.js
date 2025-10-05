@@ -12,7 +12,7 @@ const VagasController = {
   },
   async getVagaById(id) {
     try {
-        const response = await api.get(`VagaApiController.php?action=detalhes&id=${id}`);
+        const response = await api.get(`/api/VagaApiController.php?action=detalhes&id=${id}`);
         return response.data;
     } catch (error) {
         console.error(`Erro ao buscar vaga de id ${id}:`, error);

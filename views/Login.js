@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { loginStyles } from '../assets/css/LoginStyles';
 import LoginController from '../controllers/LoginController';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Login({ navigation }) {
   const [email, setEmail] = useState('');
@@ -25,25 +26,28 @@ export default function Login({ navigation }) {
       return;
     }
 
-    const result = await LoginController.login(email, password);
+    try {
+      const result = await LoginController.login(email, password);
 
-    if (!result.success) {
-      setShowError(true);
-      setErrorMessage(result.errors[0]);
-    } else {
-      setShowError(false);
-      console.log('Login bem-sucedido:', result);
-
-      if (result.usuario && result.usuario.tipo === 1) {
-        navigation.replace('UsuarioComum');
+      if (!result.success) {
+        setShowError(true);
+        setErrorMessage(result.errors?.[0] || 'Erro ao fazer login');
       } else {
-        navigation.replace('Home');
-      }
-    }
-  };
+        setShowError(false);
+        await AsyncStorage.setItem('usuarioLogado', JSON.stringify(result.usuario));
+        console.log('Usuário salvo com sucesso:', result.usuario);
 
-  const handleRegister = () => {
-    navigation.navigate('FormCadastro');
+        if (result.usuario && result.usuario.tipo === 1) {
+          navigation.replace('UsuarioComum');
+        } else {
+          navigation.replace('Home');
+        }
+      }
+    } catch (error) {
+      console.error('Erro ao tentar logar:', error);
+      setShowError(true);
+      setErrorMessage('Erro de conexão com o servidor.');
+    }
   };
 
   return (
@@ -52,14 +56,11 @@ export default function Login({ navigation }) {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={loginStyles.container}
       >
-        <ScrollView 
-          contentContainerStyle={loginStyles.mainContent}
-          showsVerticalScrollIndicator={false}
-        >
+        <ScrollView contentContainerStyle={loginStyles.mainContent}>
           <View style={loginStyles.loginCard}>
             <Text style={loginStyles.loginTitle}>Bem-vindo ao E-Jobs</Text>
             <Text style={loginStyles.loginSubtitle}>Faça login para continuar</Text>
-            
+
             {showError && (
               <View style={loginStyles.errorContainer}>
                 <Text style={loginStyles.errorText}>{errorMessage}</Text>
@@ -68,43 +69,34 @@ export default function Login({ navigation }) {
 
             <View style={loginStyles.inputContainer}>
               <Text style={loginStyles.inputLabel}>Email</Text>
-              <View style={loginStyles.inputWrapper}>
-                <TextInput
-                  style={loginStyles.input}
-                  placeholder="Informe seu email"
-                  placeholderTextColor="#999"
-                  value={email}
-                  onChangeText={setEmail}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                />
-              </View>
+              <TextInput
+                style={loginStyles.input}
+                placeholder="Informe seu email"
+                value={email}
+                onChangeText={setEmail}
+                autoCapitalize="none"
+              />
             </View>
 
             <View style={loginStyles.inputContainer}>
               <Text style={loginStyles.inputLabel}>Senha</Text>
-              <View style={loginStyles.inputWrapper}>
-                <TextInput
-                  style={loginStyles.input}
-                  placeholder="Informe sua senha"
-                  placeholderTextColor="#999"
-                  value={password}
-                  onChangeText={setPassword}
-                  secureTextEntry={true}
-                  autoCapitalize="none"
-                />
-              </View>
+              <TextInput
+                style={loginStyles.input}
+                placeholder="Informe sua senha"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+              />
             </View>
 
             <TouchableOpacity style={loginStyles.loginButton} onPress={handleLogin}>
               <Text style={loginStyles.loginButtonText}>Entrar</Text>
-              <Text style={loginStyles.loginButtonIcon}>→</Text>
             </TouchableOpacity>
 
             <View style={loginStyles.registerContainer}>
               <Text style={loginStyles.registerText}>
                 Não tem uma conta?{' '}
-                <Text style={loginStyles.registerLink} onPress={handleRegister}>
+                <Text style={loginStyles.registerLink} onPress={() => navigation.navigate('FormCadastro')}>
                   Cadastre-se
                 </Text>
               </Text>
