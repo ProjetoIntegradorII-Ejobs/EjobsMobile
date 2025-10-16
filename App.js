@@ -6,6 +6,7 @@ import Home from "./views/Home";
 import Login from "./views/Login";
 import Cadastro from "./views/Cadastro";
 import FormCadastro from "./views/FormCadastro";
+import FormVagas from "./views/FormVagas";
 import VagasList from "./views/VagasList";
 import UsuarioComum from "./views/UsuarioComum";
 import VagaDetalhes from "./views/VagaDetalhes";
@@ -42,6 +43,7 @@ export default function App() {
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="Cadastro" component={Cadastro} />
         <Stack.Screen name="FormCadastro" component={FormCadastro} />
+        <Stack.Screen name="FormVagas" component={FormVagas} />
         <Stack.Screen name="Vagas" component={VagasList} />
         <Stack.Screen name="UsuarioComum" component={UsuarioComum} />
         <Stack.Screen name="VagaDetalhes" component={VagaDetalhes} />

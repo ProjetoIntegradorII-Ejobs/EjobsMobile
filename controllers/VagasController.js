@@ -18,7 +18,24 @@ const VagasController = {
         console.error(`Erro ao buscar vaga de id ${id}:`, error);
         throw error;
     }
-}
+  },
+   async cadastrar(vaga) {
+    try {
+      const response = await api.post("/api/VagaApiController.php?action=save", vaga);
+      return response.data;
+    } catch (error) {
+      return error.response?.data || { success: false, errors: ["Erro ao salvar vaga."] };
+    }
+  },
+
+  async create() {
+    try {
+      const response = await api.get("/api/VagaApiController.php?action=create");
+      return response.data;
+    } catch (error) {
+      return error.response?.data || { success: false, errors: ["Erro ao carregar dados do cadastro."] };
+    }
+  },
 
 };
 
