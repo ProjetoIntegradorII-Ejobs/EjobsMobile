@@ -31,6 +31,13 @@ export default function Home({ navigation }) {
           <Text style={homeStyles.buttonText}>Cadastro</Text>
         </TouchableOpacity>
 
+        <TouchableOpacity 
+          style={homeStyles.button}
+          onPress={() => navigation.navigate('FormVagas')}
+        >
+          <Text style={homeStyles.buttonText}>Cadastro</Text>
+        </TouchableOpacity>
+
       </View>
     </View>
   );
