@@ -39,7 +39,6 @@ const handleChange = async (field, value) => {
   setFormData(prev => ({ ...prev, [field]: value }));
 
   if (field === 'estado') {
-    // resetar cidade e atualizar estado
     setFormData(prev => ({ ...prev, estado: value, cidade: '' }));
 
     try {
@@ -118,7 +117,7 @@ const handleChange = async (field, value) => {
           <View style={cadastroStyles.formContainer}>
             <Text style={cadastroStyles.sectionTitle}>Preencha os dados abaixo</Text>
             
-            {/* Papel */}
+    
             <View style={cadastroStyles.inputGroup}>
               <Text style={cadastroStyles.label}>
                 Papel<Text style={cadastroStyles.requiredIndicator}> *</Text>
@@ -137,7 +136,7 @@ const handleChange = async (field, value) => {
               </View>
             </View>
 
-            {/* Estado */}
+        
             <View style={cadastroStyles.inputGroup}>
               <Text style={cadastroStyles.label}>Estado</Text>
               <View style={cadastroStyles.pickerContainer}>
@@ -155,7 +154,7 @@ const handleChange = async (field, value) => {
               </View>
             </View>
 
-            {/* Cidade */}
+           
             <View style={cadastroStyles.inputGroup}>
               <Text style={cadastroStyles.label}>Cidade</Text>
               <View style={cadastroStyles.pickerContainer}>
@@ -173,7 +172,6 @@ const handleChange = async (field, value) => {
               </View>
             </View>
 
-            {/* Nome */}
             <View style={cadastroStyles.inputGroup}>
               <Text style={cadastroStyles.label}>Nome</Text>
               <TextInput
@@ -184,7 +182,7 @@ const handleChange = async (field, value) => {
               />
             </View>
 
-            {/* Email */}
+            
             <View style={cadastroStyles.inputGroup}>
               <Text style={cadastroStyles.label}>Email</Text>
               <TextInput
@@ -195,7 +193,6 @@ const handleChange = async (field, value) => {
               />
             </View>
 
-            {/* Senha */}
             <View style={cadastroStyles.inputGroup}>
               <Text style={cadastroStyles.label}>Senha</Text>
               <TextInput
@@ -207,7 +204,7 @@ const handleChange = async (field, value) => {
               />
             </View>
 
-            {/* Confirmar senha */}
+            
             <View style={cadastroStyles.inputGroup}>
               <Text style={cadastroStyles.label}>Confirmar Senha</Text>
               <TextInput
@@ -219,7 +216,7 @@ const handleChange = async (field, value) => {
               />
             </View>
 
-            {/* Documento */}
+            
             <View style={cadastroStyles.inputGroup}>
               <Text style={cadastroStyles.label}>Documento</Text>
               <TextInput
@@ -230,7 +227,7 @@ const handleChange = async (field, value) => {
               />
             </View>
 
-            {/* Telefone */}
+          
             <View style={cadastroStyles.inputGroup}>
               <Text style={cadastroStyles.label}>Telefone</Text>
               <TextInput
@@ -241,7 +238,7 @@ const handleChange = async (field, value) => {
               />
             </View>
 
-            {/* Endereço */}
+          
             <View style={cadastroStyles.inputGroup}>
               <Text style={cadastroStyles.label}>Logradouro</Text>
               <TextInput
@@ -290,7 +287,6 @@ const handleChange = async (field, value) => {
               <Text style={cadastroStyles.buttonText}>Cadastrar</Text>
             </TouchableOpacity>
 
-            {/* Link para login */}
             <View style={{ marginTop: 16, alignItems: 'center' }}>
               <Text>
                 Já tem conta?{' '}

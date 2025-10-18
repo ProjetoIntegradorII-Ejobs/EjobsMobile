@@ -5,20 +5,20 @@ const UsuarioController = {
     try {
       const response = await api.post(
         "/api/UsuarioApiController.php?action=update",
-        JSON.stringify(usuario), // 🔹 Converter explicitamente em JSON
+        JSON.stringify(usuario),
         {
           headers: {
-            "Content-Type": "application/json", // 🔹 Enviar como JSON
+            "Content-Type": "application/json",
           },
         }
       );
 
-      console.log("📤 Enviado para API:", usuario);
-      console.log("📥 Resposta da API:", response.data);
+      console.log(" Enviado para API:", usuario);
+      console.log(" Resposta da API:", response.data);
 
       return response.data;
     } catch (error) {
-      console.error("❌ Erro na requisição UPDATE:", error);
+      console.error(" Erro na requisição UPDATE:", error);
       return error.response?.data || {
         success: false,
         errors: ["Falha na comunicação com o servidor."],

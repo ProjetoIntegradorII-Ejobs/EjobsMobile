@@ -48,14 +48,12 @@ export default function Perfil({ navigation }) {
       if (!result.success) {
         Alert.alert("Erro", result.errors?.[0] || "Falha ao atualizar usuário.");
       } else {
-        // Atualiza o estado local e o AsyncStorage
         setUsuario(result.usuario);
         await AsyncStorage.setItem(
           "usuarioLogado",
           JSON.stringify(result.usuario)
         );
 
-        // Atualiza os inputs do formulário
         setForm({
           nome: result.usuario.nome,
           email: result.usuario.email,
