@@ -9,12 +9,14 @@ import {
   TouchableOpacity,
   Platform,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
-import { cadastroStyles } from "../assets/css/CadastroStyles"; 
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { cadastroStyles } from "../assets/css/CadastroStyles";
 import VagasController from "../controllers/VagasController";
 
-export default function CadastrarVaga({ navigation }) {
+export default function FormVagas({ navigation }) {
   const [formData, setFormData] = useState({
     titulo: "",
     modalidade: "",
@@ -35,36 +37,57 @@ export default function CadastrarVaga({ navigation }) {
   const [cargos, setCargos] = useState([]);
   const [categorias, setCategorias] = useState([]);
   const [empresa, setEmpresa] = useState(null);
+  const [loading, setLoading] = useState(true);
 
+  // Atualiza valores dos inputs
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
+  // 🔹 Carrega listas iniciais e ID da empresa logada
   useEffect(() => {
     const loadData = async () => {
       try {
-        const data = await VagasController.create();
+        const dados = await AsyncStorage.getItem("usuarioLogado");
+        const empresa = JSON.parse(dados);
+
+        if (!empresa || !empresa.id) {
+          Alert.alert("Erro", "Usuário não encontrado. Faça login novamente.");
+          navigation.navigate("Login");
+          return;
+        }
+
+        console.log("📦 Empresa logada:", empresa);
+
+        const data = await VagasController.create({ usuarioId: empresa.id });
+
         if (data.success) {
+          console.log("✅ Dados carregados do backend:", data);
+
           setModalidades(data.modalidades || []);
           setHorarios(data.horarios || []);
           setRegimes(data.regimes || []);
           setCargos(data.cargos || []);
           setCategorias(data.categorias || []);
           setEmpresa(data.empresa || null);
-          if (data.empresa) {
-            handleChange("usuarioId", data.empresa.id.toString());
-          }
+
+          if (data.empresa) handleChange("usuarioId", data.empresa.id.toString());
         } else {
+          console.log("⚠️ Erro ao carregar dados:", data.errors);
           Alert.alert("Erro", "Não foi possível carregar dados para cadastro de vaga");
         }
       } catch (err) {
-        console.error(err);
-        Alert.alert("Erro", "Falha ao conectar com o servidor");
+        console.error("❌ Erro ao conectar com o servidor:", err);
+        Alert.alert("Erro", "Falha na comunicação com o servidor");
+      } finally {
+        setLoading(false);
       }
     };
+
     loadData();
   }, []);
 
+  // 🔹 Função para cadastrar a vaga
   const handleRegister = async () => {
     if (
       !formData.titulo ||
@@ -81,17 +104,29 @@ export default function CadastrarVaga({ navigation }) {
 
     try {
       const result = await VagasController.cadastrar(formData);
+
       if (!result.success) {
+        console.error("⚠️ Erro ao cadastrar vaga:", result);
         Alert.alert("Erro", result.errors ? result.errors[0] : "Erro ao cadastrar vaga");
       } else {
         Alert.alert("Sucesso", "Vaga cadastrada com sucesso!");
-        navigation.replace("Vagas");
+        navigation.replace("Empresa");
       }
     } catch (error) {
+      console.error("❌ Erro na requisição:", error);
       Alert.alert("Erro", "Não foi possível conectar ao servidor");
-      console.error(error);
     }
   };
+
+  // 🔹 Exibe carregamento
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" color="#2563eb" />
+        <Text style={{ marginTop: 10 }}>Carregando dados...</Text>
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView style={cadastroStyles.container}>
@@ -213,7 +248,11 @@ export default function CadastrarVaga({ navigation }) {
                 >
                   <Picker.Item label="Selecione a categoria" value="" />
                   {categorias.map((categoria) => (
-                    <Picker.Item key={categoria.id} label={categoria.nome} value={categoria.id.toString()} />
+                    <Picker.Item
+                      key={categoria.id}
+                      label={categoria.nome}
+                      value={categoria.id.toString()}
+                    />
                   ))}
                 </Picker>
               </View>
@@ -245,6 +284,7 @@ export default function CadastrarVaga({ navigation }) {
               />
             </View>
 
+            {/* Botão */}
             <TouchableOpacity
               style={[cadastroStyles.button, cadastroStyles.saveButton]}
               onPress={handleRegister}

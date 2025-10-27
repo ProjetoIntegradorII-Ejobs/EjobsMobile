@@ -1,0 +1,117 @@
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  ActivityIndicator,
+  ScrollView,
+} from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Ionicons } from "@expo/vector-icons";
+import VagasController from "../controllers/VagasController";
+
+export default function Empresa({ navigation }) {
+  const [empresa, setEmpresa] = useState(null);
+  const [vagas, setVagas] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function carregar() {
+      const dados = await AsyncStorage.getItem("usuarioLogado");
+      if (dados) {
+        const empresaData = JSON.parse(dados);
+        setEmpresa(empresaData);
+
+        const response = await VagasController.listarPorEmpresa(empresaData.id);
+        if (response.success) {
+          setVagas(response.vagas);
+        }
+      }
+      setLoading(false);
+    }
+    carregar();
+  }, []);
+
+  if (loading) {
+    return (
+      <View style={styles.center}>
+        <ActivityIndicator size="large" color="#2563eb" />
+      </View>
+    );
+  }
+
+  return (
+    <ScrollView style={styles.container}>
+      <Text style={styles.bemvindo}>
+        Bem-vindo(a), {empresa?.nome || "Empresa"}!
+      </Text>
+      <Text style={styles.subtitulo}>Gerencie suas vagas de forma eficiente</Text>
+
+      <View style={styles.actions}>
+        <TouchableOpacity
+          style={styles.card}
+          onPress={() => navigation.navigate("ListarVagasEmpresa")}
+        >
+          <Ionicons name="briefcase-outline" size={36} color="#2563eb" />
+          <Text style={styles.cardNumero}>{vagas.length}</Text>
+          <Text style={styles.cardTexto}>Vagas Ativas</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.card}
+          onPress={() => navigation.navigate("FormVagas")}
+        >
+          <Ionicons name="add-circle-outline" size={36} color="#16a34a" />
+          <Text style={styles.cardTexto}>Criar Vaga</Text>
+        </TouchableOpacity>
+      </View>
+
+      <Text style={styles.sectionTitle}>Vagas Ativas</Text>
+      {vagas.length === 0 ? (
+        <Text style={{ color: "#6b7280" }}>Nenhuma vaga cadastrada.</Text>
+      ) : (
+        vagas.map((vaga) => (
+          <View key={vaga.id} style={styles.vagaCard}>
+            <Text style={styles.vagaTitulo}>{vaga.titulo}</Text>
+            <Text style={styles.vagaInfo}>
+              <Ionicons name="cash-outline" size={14} color="#2563eb" /> R$ {vaga.salario}
+            </Text>
+            <Text style={styles.vagaInfo}>
+              <Ionicons name="time-outline" size={14} color="#2563eb" /> {vaga.horario}
+            </Text>
+          </View>
+        ))
+      )}
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: "#fff", padding: 16 },
+  center: { flex: 1, justifyContent: "center", alignItems: "center" },
+  bemvindo: { fontSize: 22, fontWeight: "bold", color: "#111827" },
+  subtitulo: { color: "#6b7280", marginBottom: 16 },
+  actions: { flexDirection: "row", justifyContent: "space-between", marginVertical: 15 },
+  card: {
+    flex: 1,
+    backgroundColor: "#f3f4f6",
+    borderRadius: 10,
+    alignItems: "center",
+    padding: 15,
+    marginHorizontal: 5,
+  },
+  cardNumero: { fontSize: 22, fontWeight: "bold", color: "#2563eb", marginTop: 4 },
+  cardTexto: { fontSize: 14, color: "#374151" },
+  sectionTitle: { fontSize: 18, fontWeight: "bold", marginTop: 20, marginBottom: 10 },
+  vagaCard: {
+    backgroundColor: "#f9fafb",
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: "#e5e7eb",
+  },
+  vagaTitulo: { fontSize: 16, fontWeight: "bold" },
+  vagaInfo: { fontSize: 14, color: "#374151" },
+});
