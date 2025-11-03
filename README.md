@@ -5,4 +5,4 @@ Mini Tutorial para instalar a aplicação
 - após baixar as dependencias, digite npx expo start para iniciar a aplicação
 - escaneia o QR CODE com o app do Expo GO 
 
-Link para o Repositório do BackEnd do projeto: https://github.com/Projeto-Integrador-E-Jobs
+Link para o Repositório do BackEnd do projeto: https://github.com/Projeto-Integrador-E-Jobs/E-Jobs
