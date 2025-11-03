@@ -70,7 +70,6 @@ export default function VagasAtivas({ navigation }) {
             if (result.success) {
               Alert.alert("Sucesso", result.message);
 
-              // Atualiza o status local da vaga sem precisar recarregar tudo
               setVagas((prev) =>
                 prev.map((v) =>
                   v.id === vagaId ? { ...v, status: result.novoStatus } : v
