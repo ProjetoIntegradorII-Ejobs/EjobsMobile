@@ -13,6 +13,8 @@ import VagaDetalhes from "./views/VagaDetalhes";
 import { ActivityIndicator, View } from "react-native";
 import Perfil from "./views/Perfil";
 import Empresa from "./views/Empresa";
+import VagasAtivas from "./views/VagasAtivas";
+import EditarVaga from "./views/EditarVaga";
 
 console.log("LOGIN COMPONENT =>", Login);
 
@@ -50,6 +52,8 @@ export default function App() {
         <Stack.Screen name="VagaDetalhes" component={VagaDetalhes} />
         <Stack.Screen name="Perfil" component={Perfil} options={{ headerShown: false }}/>
         <Stack.Screen name="Empresa" component={Empresa} />
+        <Stack.Screen name="VagasAtivas" component={VagasAtivas} />
+        <Stack.Screen name="EditarVaga" component={EditarVaga} />
       </Stack.Navigator>
     </NavigationContainer>
   );
