@@ -13,6 +13,9 @@ import {
 import { cadastroStyles } from '../assets/css/CadastroStyles';
 import CadastroController from '../controllers/CadastroController';
 import { Picker } from '@react-native-picker/picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import LoginController from '../controllers/LoginController';
+
 
 export default function Cadastrar({ navigation }) {
   const [formData, setFormData] = useState({
@@ -91,7 +94,30 @@ const handleChange = async (field, value) => {
         Alert.alert('Erro', result.errors ? result.errors[0] : 'Erro ao cadastrar usuário');
       } else {
         Alert.alert('Sucesso', 'Cadastro realizado com sucesso!');
-        navigation.replace('UsuarioComum');
+        
+        const loginResult = await LoginController.login(
+        formData.email,
+        formData.senha
+        );
+
+      if (loginResult.success && loginResult.usuario) {
+          await AsyncStorage.setItem("usuarioLogado", JSON.stringify(loginResult.usuario));
+          console.log("Usuário logado automaticamente:", loginResult.usuario);
+
+          const tipo = loginResult.usuario.tipo;
+
+          if (tipo === 1) {
+            navigation.replace("UsuarioComum");
+          } else if (tipo === 3) {
+            navigation.replace("Empresa");
+          } else {
+            navigation.replace("Home");
+          }
+      } else {
+                Alert.alert('Erro', 'Não foi possível realizar login automático.');
+                navigation.replace('Login');
+      }
+
       }
     } catch (error) {
       Alert.alert('Erro', 'Não foi possível conectar ao servidor');
