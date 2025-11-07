@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   Text, 
   View, 
@@ -16,8 +16,9 @@ import { Picker } from '@react-native-picker/picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LoginController from '../controllers/LoginController';
 
-
 export default function Cadastrar({ navigation }) {
+  const isMounted = useRef(true);
+
   const [formData, setFormData] = useState({
     tipoUsuario: '',
     nome: '',
@@ -38,45 +39,76 @@ export default function Cadastrar({ navigation }) {
   const [cidades, setCidades] = useState([]);
   const [papeis, setPapeis] = useState([]);
 
-const handleChange = async (field, value) => {
-  setFormData(prev => ({ ...prev, [field]: value }));
-
-  if (field === 'estado') {
-    setFormData(prev => ({ ...prev, estado: value, cidade: '' }));
-
-    try {
-      const cidadesEstado = await CadastroController.carregaCidades(value);
-      console.log("Cidades recebidas:", cidadesEstado);
-      setCidades(Array.isArray(cidadesEstado) ? cidadesEstado : []);
-    } catch (error) {
-      console.error("Erro ao carregar cidades:", error);
-      setCidades([]);
-      Alert.alert('Erro', 'Falha ao carregar cidades do estado selecionado');
+  // Log global para capturar exceções silenciosas
+  global.ErrorUtils.setGlobalHandler((err, isFatal) => {
+    console.warn('🚨 [Global Error Handler] Erro detectado:', err.message);
+    if (isFatal) {
+      Alert.alert('Erro Fatal', 'O app encontrou um erro e será reiniciado.');
     }
-  }
-};
-
-
+  });
 
   useEffect(() => {
+    isMounted.current = true;
+    console.log('🟢 FormCadastro montado.');
+
     const loadData = async () => {
       try {
+        console.log('📡 Carregando dados iniciais...');
         const data = await CadastroController.create();
-        if (data.success) {
+        if (isMounted.current && data.success) {
           setEstados(data.estados || []);
           setPapeis(data.papeis || []);
-        } else {
+          console.log('✅ Dados iniciais carregados com sucesso.');
+        } else if (isMounted.current) {
+          console.warn('⚠️ Dados não retornaram sucesso:', data);
           Alert.alert('Erro', 'Não foi possível carregar dados do cadastro');
         }
       } catch (err) {
-        console.error(err);
-        Alert.alert('Erro', 'Não foi possível conectar ao servidor');
+        console.error('❌ Erro ao carregar dados iniciais:', err);
+        if (isMounted.current) {
+          Alert.alert('Erro', 'Não foi possível conectar ao servidor');
+        }
       }
     };
+
     loadData();
+
+    return () => {
+      console.log('🔴 FormCadastro desmontado.');
+      isMounted.current = false;
+    };
   }, []);
 
+  const handleChange = async (field, value) => {
+    console.log(`✏️ Campo alterado: ${field} = ${value}`);
+
+    setFormData(prev => ({ ...prev, [field]: value }));
+
+    if (field === 'estado') {
+      setFormData(prev => ({ ...prev, estado: value, cidade: '' }));
+      console.log('🌎 Estado alterado, recarregando cidades...');
+
+      try {
+        const cidadesEstado = await CadastroController.carregaCidades(value);
+        if (!isMounted.current) {
+          console.warn('⚠️ Tentativa de atualizar cidades após desmontagem! Cancelando update.');
+          return;
+        }
+
+        console.log('🏙️ Cidades recebidas:', cidadesEstado);
+        setCidades(Array.isArray(cidadesEstado) ? cidadesEstado : []);
+      } catch (error) {
+        console.error('❌ Erro ao carregar cidades:', error);
+        if (isMounted.current) {
+          setCidades([]);
+          Alert.alert('Erro', 'Falha ao carregar cidades do estado selecionado');
+        }
+      }
+    }
+  };
+
   const handleRegister = async () => {
+    console.log('📝 Iniciando processo de cadastro...');
     if (!formData.nome || !formData.email || !formData.senha || !formData.conf_senha) {
       Alert.alert('Erro', 'Preencha os campos obrigatórios');
       return;
@@ -88,40 +120,46 @@ const handleChange = async (field, value) => {
     }
 
     try {
+      console.log('📤 Enviando dados de cadastro:', formData);
       const result = await CadastroController.register(formData);
+      console.log('📥 Resposta do servidor:', result);
 
       if (!result.success) {
         Alert.alert('Erro', result.errors ? result.errors[0] : 'Erro ao cadastrar usuário');
-      } else {
-        Alert.alert('Sucesso', 'Cadastro realizado com sucesso!');
-        
-        const loginResult = await LoginController.login(
-        formData.email,
-        formData.senha
-        );
+        return;
+      }
 
-      if (loginResult.success && loginResult.usuario) {
-          await AsyncStorage.setItem("usuarioLogado", JSON.stringify(loginResult.usuario));
-          console.log("Usuário logado automaticamente:", loginResult.usuario);
+      Alert.alert('Sucesso', 'Cadastro realizado com sucesso!');
+
+      try {
+        console.log('🔐 Tentando login automático...');
+        const loginResult = await LoginController.login(formData.email, formData.senha);
+        console.log('📥 Resultado do login automático:', loginResult);
+
+        if (loginResult.success && loginResult.usuario) {
+          await AsyncStorage.setItem('usuarioLogado', JSON.stringify(loginResult.usuario));
+          console.log('✅ Usuário logado automaticamente:', loginResult.usuario);
 
           const tipo = loginResult.usuario.tipo;
-
           if (tipo === 1) {
-            navigation.replace("UsuarioComum");
+            navigation.replace('UsuarioComum');
           } else if (tipo === 3) {
-            navigation.replace("Empresa");
+            navigation.replace('Empresa');
           } else {
-            navigation.replace("Home");
+            navigation.replace('Home');
           }
-      } else {
-                Alert.alert('Erro', 'Não foi possível realizar login automático.');
-                navigation.replace('Login');
-      }
-
+        } else {
+          Alert.alert('Erro', 'Não foi possível realizar login automático.');
+          navigation.replace('Login');
+        }
+      } catch (err) {
+        console.error('❌ Erro no login automático:', err);
+        Alert.alert('Erro', 'Falha ao realizar login automático.');
+        navigation.replace('Login');
       }
     } catch (error) {
-      Alert.alert('Erro', 'Não foi possível conectar ao servidor');
-      console.error(error);
+      console.error('❌ Erro geral no cadastro:', error);
+      Alert.alert('Erro', 'Não foi possível conectar ao servidor.');
     }
   };
 
@@ -142,8 +180,8 @@ const handleChange = async (field, value) => {
 
           <View style={cadastroStyles.formContainer}>
             <Text style={cadastroStyles.sectionTitle}>Preencha os dados abaixo</Text>
-            
-    
+
+            {/* Papel */}
             <View style={cadastroStyles.inputGroup}>
               <Text style={cadastroStyles.label}>
                 Papel<Text style={cadastroStyles.requiredIndicator}> *</Text>
@@ -162,25 +200,24 @@ const handleChange = async (field, value) => {
               </View>
             </View>
 
-        
+            {/* Estado */}
             <View style={cadastroStyles.inputGroup}>
               <Text style={cadastroStyles.label}>Estado</Text>
               <View style={cadastroStyles.pickerContainer}>
-               <Picker
-  selectedValue={formData.estado}
-  onValueChange={(value) => handleChange('estado', value)}
-  style={cadastroStyles.picker}
->
-  <Picker.Item label="Selecione o estado" value="" />
-  {estados.map((estado) => (
-    <Picker.Item key={estado.codigo_uf} label={estado.nome} value={estado.codigo_uf.toString()} />
-  ))}
-</Picker>
-
+                <Picker
+                  selectedValue={formData.estado}
+                  onValueChange={(value) => handleChange('estado', value)}
+                  style={cadastroStyles.picker}
+                >
+                  <Picker.Item label="Selecione o estado" value="" />
+                  {estados.map((estado) => (
+                    <Picker.Item key={estado.codigo_uf} label={estado.nome} value={estado.codigo_uf.toString()} />
+                  ))}
+                </Picker>
               </View>
             </View>
 
-           
+            {/* Cidade */}
             <View style={cadastroStyles.inputGroup}>
               <Text style={cadastroStyles.label}>Cidade</Text>
               <View style={cadastroStyles.pickerContainer}>
@@ -198,6 +235,7 @@ const handleChange = async (field, value) => {
               </View>
             </View>
 
+            {/* Campos de texto */}
             <View style={cadastroStyles.inputGroup}>
               <Text style={cadastroStyles.label}>Nome</Text>
               <TextInput
@@ -208,7 +246,6 @@ const handleChange = async (field, value) => {
               />
             </View>
 
-            
             <View style={cadastroStyles.inputGroup}>
               <Text style={cadastroStyles.label}>Email</Text>
               <TextInput
@@ -230,7 +267,6 @@ const handleChange = async (field, value) => {
               />
             </View>
 
-            
             <View style={cadastroStyles.inputGroup}>
               <Text style={cadastroStyles.label}>Confirmar Senha</Text>
               <TextInput
@@ -242,7 +278,6 @@ const handleChange = async (field, value) => {
               />
             </View>
 
-            
             <View style={cadastroStyles.inputGroup}>
               <Text style={cadastroStyles.label}>Documento</Text>
               <TextInput
@@ -253,7 +288,6 @@ const handleChange = async (field, value) => {
               />
             </View>
 
-          
             <View style={cadastroStyles.inputGroup}>
               <Text style={cadastroStyles.label}>Telefone</Text>
               <TextInput
@@ -264,7 +298,6 @@ const handleChange = async (field, value) => {
               />
             </View>
 
-          
             <View style={cadastroStyles.inputGroup}>
               <Text style={cadastroStyles.label}>Logradouro</Text>
               <TextInput
@@ -295,7 +328,6 @@ const handleChange = async (field, value) => {
               />
             </View>
 
-            {/* Descrição */}
             <View style={cadastroStyles.inputGroup}>
               <Text style={cadastroStyles.label}>Descrição</Text>
               <TextInput
