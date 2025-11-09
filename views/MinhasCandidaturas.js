@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   SafeAreaView,
   StyleSheet,
+  TouchableOpacity,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CandidaturaController from "../controllers/CandidaturaController";
@@ -20,11 +21,14 @@ export default function MinhasCandidaturas() {
       if (!dados) return;
 
       const usuario = JSON.parse(dados);
-      const result = await CandidaturaController.listarPorCandidato(usuario.id);
+      const result = await CandidaturaController.getCandidaturaByUsuario(usuario.id);
+      console.log("📦 Resultado da API:", result);
 
-      if (result.success) {
-        setCandidaturas(result.candidaturas || []);
+
+      if (Array.isArray(result)) {
+        setCandidaturas(result);
       }
+
       setLoading(false);
     }
 
@@ -49,20 +53,26 @@ export default function MinhasCandidaturas() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Minhas Candidaturas</Text>
 
       <FlatList
         data={candidaturas}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <View style={styles.card}>
-            <Text style={styles.vagaTitulo}>{item.vaga.titulo}</Text>
-            <Text style={styles.vagaEmpresa}>{item.vaga.empresa}</Text>
-            <Text style={styles.vagaCargo}>Cargo: {item.vaga.cargo}</Text>
-            <Text style={styles.vagaSalario}>Salário: R$ {item.vaga.salario}</Text>
+            <Text style={styles.vagaTitulo}>{item.vaga_titulo}</Text>
+            <Text style={styles.vagaEmpresa}>{item.empresa}</Text>
+
+            {/* Se o cargo vier preenchido no futuro */}
+            {item.vaga_cargo && Object.keys(item.vaga_cargo).length > 0 && (
+              <Text style={styles.vagaCargo}>
+                Cargo: {item.vaga_cargo.nome || "Não informado"}
+              </Text>
+            )}
+
             <Text style={styles.data}>
               Candidatado em: {item.data_candidatura.split(" ")[0]}
             </Text>
+
             <Text
               style={[
                 styles.status,
@@ -71,13 +81,20 @@ export default function MinhasCandidaturas() {
                   : styles.statusAndamento,
               ]}
             >
-              {item.status === "FINALIZADO"
-                ? "Finalizado"
-                : "Em andamento"}
+              {item.status === "FINALIZADO" ? "Finalizado" : "Em andamento"}
             </Text>
+            {item.status !== "FINALIZADO" && (
+              <TouchableOpacity
+                style={styles.btnCancelar}
+                onPress={() => cancelarCandidatura(item.id)}
+              >
+                <Text style={styles.btnCancelarTexto}>Cancelar candidatura</Text>
+              </TouchableOpacity>
+            )}
           </View>
         )}
       />
+
     </SafeAreaView>
   );
 }
@@ -104,4 +121,9 @@ const styles = StyleSheet.create({
   status: { marginTop: 6, fontWeight: "bold", textAlign: "right" },
   statusAndamento: { color: "#10b981" },
   statusFinalizado: { color: "#ef4444" },
+  btnCancelarTexto: {
+    color: "#fff",
+    fontWeight: "bold",
+    textAlign: "center",
+  },
 });

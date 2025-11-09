@@ -63,6 +63,14 @@ export default function UsuarioComum({ navigation }) {
         </TouchableOpacity>
 
         <TouchableOpacity
+          style={[styles.button, { backgroundColor: "#2563eb" }]}
+          onPress={() => navigation.navigate("MinhasCandidaturas")}
+        >
+          <Ionicons name="briefcase-outline" size={18} color="#fff" />
+          <Text style={styles.buttonText}>Minhas Candidaturas</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
           style={[styles.button, { backgroundColor: "#10b981" }]}
           onPress={() => navigation.navigate("Perfil")}
         >

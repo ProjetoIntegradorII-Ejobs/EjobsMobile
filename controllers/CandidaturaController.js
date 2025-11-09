@@ -50,6 +50,25 @@ const CandidaturaController = {
       );
     }
   },
+
+  async getCandidaturaByUsuario(id) {
+    try {
+      const response = await api.post(
+        `/api/CandidaturaApiController.php?action=minhasCandidaturas&id=${id}`,
+        JSON.stringify({ id_usuario: id }),
+      {
+        headers: { "Content-Type": "application/json" },
+      }
+      );
+      return response.data;
+    } catch (error) {
+      console.error(`❌ Erro ao buscar candidaturas`, error);
+      return { success: false, errors: ["Erro ao carregar detalhes da vaga."] };
+    }
+  },
+
+  async cancelarCandidatura(id) {
+  }
 };
 
 export default CandidaturaController;

@@ -15,6 +15,7 @@ import Perfil from "./views/Perfil";
 import Empresa from "./views/Empresa";
 import VagasAtivas from "./views/VagasAtivas";
 import EditarVaga from "./views/EditarVaga";
+import MinhasCandidaturas from "./views/MinhasCandidaturas";
 import CandidatosVaga from "./views/CandidatosVaga";
 
 console.log("LOGIN COMPONENT =>", Login);
@@ -55,6 +56,7 @@ export default function App() {
         <Stack.Screen name="Empresa" component={Empresa} />
         <Stack.Screen name="VagasAtivas" component={VagasAtivas} />
         <Stack.Screen name="EditarVaga" component={EditarVaga} />
+        <Stack.Screen name="MinhasCandidaturas" component={MinhasCandidaturas} />
         <Stack.Screen name="CandidatosVaga" component={CandidatosVaga} />
       </Stack.Navigator>
     </NavigationContainer>
