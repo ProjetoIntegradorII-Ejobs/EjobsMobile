@@ -7,11 +7,12 @@ import {
   SafeAreaView,
   StyleSheet,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CandidaturaController from "../controllers/CandidaturaController";
 
-export default function MinhasCandidaturas() {
+export default function MinhasCandidaturas({navigation}) {
   const [candidaturas, setCandidaturas] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -34,6 +35,28 @@ export default function MinhasCandidaturas() {
 
     carregar();
   }, []);
+
+  const cancelarCandidatura = (id) => {
+    Alert.alert(
+      "Cancelar candidatura",
+      "Tem certeza que deseja cancelar esta candidatura?",
+      [
+        { text: "Não", style: "cancel" },
+        {
+          text: "Sim",
+          onPress: async () => {
+            const response = await CandidaturaController.cancelarCandidatura(id);
+            if (response.success) {
+              Alert.alert("Sucesso", "Candidatura cancelada com sucesso!");
+              setCandidaturas(candidaturas.filter((item) => item.id !== id));
+            } else {
+              Alert.alert("Erro", "Não foi possível cancelar a candidatura.");
+            }
+          },
+        },
+      ]
+    );
+  };
 
   if (loading) {
     return (
@@ -61,14 +84,11 @@ export default function MinhasCandidaturas() {
           <View style={styles.card}>
             <Text style={styles.vagaTitulo}>{item.vaga_titulo}</Text>
             <Text style={styles.vagaEmpresa}>{item.empresa}</Text>
-
-            {/* Se o cargo vier preenchido no futuro */}
-            {item.vaga_cargo && Object.keys(item.vaga_cargo).length > 0 && (
-              <Text style={styles.vagaCargo}>
-                Cargo: {item.vaga_cargo.nome || "Não informado"}
-              </Text>
-            )}
-
+           
+            <Text style={styles.vagaCargo}>
+              Cargo: {item.vaga_cargo}
+            </Text>
+            
             <Text style={styles.data}>
               Candidatado em: {item.data_candidatura.split(" ")[0]}
             </Text>
@@ -83,14 +103,24 @@ export default function MinhasCandidaturas() {
             >
               {item.status === "FINALIZADO" ? "Finalizado" : "Em andamento"}
             </Text>
-            {item.status !== "FINALIZADO" && (
-              <TouchableOpacity
-                style={styles.btnCancelar}
-                onPress={() => cancelarCandidatura(item.id)}
-              >
-                <Text style={styles.btnCancelarTexto}>Cancelar candidatura</Text>
-              </TouchableOpacity>
-            )}
+            
+             <View style={styles.btnContainer}>
+    <TouchableOpacity
+      style={styles.btnDetalhes}
+      onPress={() => navigation.navigate("VagaDetalhes", { id: item.vaga_id })}
+    >
+      <Text style={styles.btnDetalhesTexto}>Ver detalhes</Text>
+    </TouchableOpacity>
+
+    {item.status !== "FINALIZADO" && (
+      <TouchableOpacity
+        style={styles.btnCancelar}
+        onPress={() => cancelarCandidatura(item.id)}
+      >
+        <Text style={styles.btnCancelarTexto}>Cancelar</Text>
+      </TouchableOpacity>
+    )}
+  </View>
           </View>
         )}
       />
@@ -121,9 +151,33 @@ const styles = StyleSheet.create({
   status: { marginTop: 6, fontWeight: "bold", textAlign: "right" },
   statusAndamento: { color: "#10b981" },
   statusFinalizado: { color: "#ef4444" },
-  btnCancelarTexto: {
-    color: "#fff",
-    fontWeight: "bold",
-    textAlign: "center",
-  },
+  btnContainer: {
+  flexDirection: "row",
+  justifyContent: "space-between",
+  marginTop: 15,
+},
+btnDetalhes: {
+  backgroundColor: "#2563eb",
+  flex: 1,
+  marginRight: 8,
+  paddingVertical: 10,
+  borderRadius: 8,
+  alignItems: "center",
+},
+btnCancelar: {
+  backgroundColor: "#f3f4f6",
+  flex: 1,
+  marginLeft: 8,
+  paddingVertical: 10,
+  borderRadius: 8,
+  alignItems: "center",
+},
+btnDetalhesTexto: {
+  color: "#fff",
+  fontWeight: "bold",
+},
+btnCancelarTexto: {
+  color: "#ef4444",
+  fontWeight: "bold",
+},
 });

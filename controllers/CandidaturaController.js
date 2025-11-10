@@ -68,6 +68,19 @@ const CandidaturaController = {
   },
 
   async cancelarCandidatura(id) {
+    try {
+      const response = await api.post(
+        `/api/CandidaturaApiController.php?action=cancelarCandidatura`,
+        JSON.stringify({ id_candidatura: id }),
+      {
+        headers: { "Content-Type": "application/json" },
+      }
+      );
+      return response.data;
+    } catch (error) {
+      console.error(error);
+      return { success: false, errors: ["Erro ao carregar detalhes da vaga."] };
+    }
   }
 };
 
