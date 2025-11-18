@@ -8,7 +8,8 @@ import {
   ScrollView,
   SafeAreaView,
   Platform,
-  Alert
+  Alert,
+  FlatList
 } from 'react-native';
 import { cadastroStyles } from '../assets/css/CadastroStyles';
 import CadastroController from '../controllers/CadastroController';
@@ -38,7 +39,26 @@ export default function Cadastrar({ navigation }) {
   const [estados, setEstados] = useState([]);
   const [cidades, setCidades] = useState([]);
   const [papeis, setPapeis] = useState([]);
+  const [termo, setTermo] = useState("");
+  const [lista, setLista] = useState([]);
+  const [showList, setShowList] = useState(false);
 
+  const buscarCidades = async (nomeCidade) => {
+    if (nomeCidade.length < 2) {
+      setLista([]);
+      return;
+    }
+
+   try {
+      const response = await CadastroController.carregaCidades(nomeCidade);
+
+      setLista(response);
+      setShowList(true);
+
+    } catch (error) {
+      console.log("Erro ao buscar cidades:", error);
+    }
+  }
   // Log global para capturar exceções silenciosas
   global.ErrorUtils.setGlobalHandler((err, isFatal) => {
     console.warn('🚨 [Global Error Handler] Erro detectado:', err.message);
@@ -84,27 +104,6 @@ export default function Cadastrar({ navigation }) {
 
     setFormData(prev => ({ ...prev, [field]: value }));
 
-    if (field === 'estado') {
-      setFormData(prev => ({ ...prev, estado: value, cidade: '' }));
-      console.log('🌎 Estado alterado, recarregando cidades...');
-
-      try {
-        const cidadesEstado = await CadastroController.carregaCidades(value);
-        if (!isMounted.current) {
-          console.warn('⚠️ Tentativa de atualizar cidades após desmontagem! Cancelando update.');
-          return;
-        }
-
-        console.log('🏙️ Cidades recebidas:', cidadesEstado);
-        setCidades(Array.isArray(cidadesEstado) ? cidadesEstado : []);
-      } catch (error) {
-        console.error('❌ Erro ao carregar cidades:', error);
-        if (isMounted.current) {
-          setCidades([]);
-          Alert.alert('Erro', 'Falha ao carregar cidades do estado selecionado');
-        }
-      }
-    }
   };
 
   const handleRegister = async () => {
@@ -200,41 +199,6 @@ export default function Cadastrar({ navigation }) {
               </View>
             </View>
 
-            {/* Estado */}
-            <View style={cadastroStyles.inputGroup}>
-              <Text style={cadastroStyles.label}>Estado</Text>
-              <View style={cadastroStyles.pickerContainer}>
-                <Picker
-                  selectedValue={formData.estado}
-                  onValueChange={(value) => handleChange('estado', value)}
-                  style={cadastroStyles.picker}
-                >
-                  <Picker.Item label="Selecione o estado" value="" />
-                  {estados.map((estado) => (
-                    <Picker.Item key={estado.codigo_uf} label={estado.nome} value={estado.codigo_uf.toString()} />
-                  ))}
-                </Picker>
-              </View>
-            </View>
-
-            {/* Cidade */}
-            <View style={cadastroStyles.inputGroup}>
-              <Text style={cadastroStyles.label}>Cidade</Text>
-              <View style={cadastroStyles.pickerContainer}>
-                <Picker
-                  selectedValue={formData.cidade}
-                  onValueChange={(value) => handleChange('cidade', value)}
-                  style={cadastroStyles.picker}
-                  enabled={cidades.length > 0}
-                >
-                  <Picker.Item label="Selecione a cidade" value="" />
-                  {cidades.map((cidade) => (
-                    <Picker.Item key={cidade.id} label={cidade.nome} value={cidade.id.toString()} />
-                  ))}
-                </Picker>
-              </View>
-            </View>
-
             {/* Campos de texto */}
             <View style={cadastroStyles.inputGroup}>
               <Text style={cadastroStyles.label}>Nome</Text>
@@ -297,6 +261,61 @@ export default function Cadastrar({ navigation }) {
                 onChangeText={text => handleChange('telefone', text)}
               />
             </View>
+
+           <View style={cadastroStyles.inputGroup}>
+              <Text style={cadastroStyles.label}>Cidade</Text>
+
+              <View style={{ position: "relative" }}>
+                <TextInput
+                  style={cadastroStyles.input}
+                  placeholder="Digite o nome da cidade"
+                  value={termo}
+                  onChangeText={(texto) => {
+                    setTermo(texto);
+                    buscarCidades(texto);
+                  }}
+                />
+
+                {showList && lista.length > 0 && (
+                  <View
+                    style={{
+                      position: "absolute",
+                      top: 55,
+                      left: 0,
+                      right: 0,
+                      backgroundColor: "#fff",
+                      borderWidth: 1,
+                      borderColor: "#ccc",
+                      borderRadius: 8,
+                      maxHeight: 180,
+                      zIndex: 10,
+                      elevation: 10, // Android sombra
+                    }}
+                  >
+                    <ScrollView nestedScrollEnabled>
+                      {lista.map((item) => (
+                        <TouchableOpacity
+                          key={item.id}
+                          style={{ padding: 12 }}
+                          onPress={() => {
+                            setTermo(`${item.nome} - ${item.uf}`);
+                            setFormData(prev => ({
+                              ...prev,
+                              cidade: item.id,
+                              estado: item.codigo_uf
+                            }));
+                            setShowList(false);
+                          }}
+                        >
+                          <Text>{item.nome} - {item.uf}</Text>
+                        </TouchableOpacity>
+                      ))}
+                    </ScrollView>
+                  </View>
+                )}
+              </View>
+            </View>
+
 
             <View style={cadastroStyles.inputGroup}>
               <Text style={cadastroStyles.label}>Logradouro</Text>
