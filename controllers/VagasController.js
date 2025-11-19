@@ -74,7 +74,7 @@ const VagasController = {
       return { success: false, vagas: [] };
     }
   },
-  
+
   async getVagaEdit(id) {
     try {
       const response = await api.get(
@@ -87,25 +87,43 @@ const VagasController = {
     }
   },
   async inativarVaga(id) {
-  try {
-    const response = await api.get(`/api/VagaApiController.php?action=inativar&id=${id}`);
-    return response.data;
-  } catch (error) {
-    console.error("❌ Erro ao inativar vaga:", error);
-    return { success: false, errors: ["Erro ao inativar vaga."] };
-  }
-},
-async alterarStatusVaga(id) {
-  try {
-    const response = await api.get(`/api/VagaApiController.php?action=alterarStatus&id=${id}`);
-    return response.data;
-  } catch (error) {
-    console.error("❌ Erro ao alterar status da vaga:", error);
-    return { success: false, errors: ["Erro ao alterar status da vaga."] };
-  }
-},
+    try {
+      const response = await api.get(
+        `/api/VagaApiController.php?action=inativar&id=${id}`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("❌ Erro ao inativar vaga:", error);
+      return { success: false, errors: ["Erro ao inativar vaga."] };
+    }
+  },
+  async alterarStatusVaga(id) {
+    try {
+      const response = await api.get(
+        `/api/VagaApiController.php?action=alterarStatus&id=${id}`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("❌ Erro ao alterar status da vaga:", error);
+      return { success: false, errors: ["Erro ao alterar status da vaga."] };
+    }
+  },
+  async buscar(term, filtros = {}) {
+    try {
+      const params = new URLSearchParams({
+        term,
+        ...filtros,
+      });
 
-
+      const response = await api.get(
+        `/api/VagaApiController.php?action=buscar&${params.toString()}`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("❌ Erro ao buscar vagas:", error);
+      return { success: false, vagas: [] };
+    }
+  },
 };
 
 export default VagasController;
