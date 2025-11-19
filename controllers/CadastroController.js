@@ -19,12 +19,12 @@ const CadastroController = {
     }
   },
 
-  async carregaCidades(idEstado) {
+  async carregaCidades(nome) {
      try {
       const response = await api.get("/controller/CidadeController.php", {
       params: {
-        action: "listarPorEstado",
-        id_estado: idEstado
+        action: "listarPorNome",
+        nome: nome
       }});
       return response.data;
     } catch (error) {
