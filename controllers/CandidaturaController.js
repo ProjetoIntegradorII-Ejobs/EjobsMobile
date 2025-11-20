@@ -34,6 +34,18 @@ const CandidaturaController = {
     }
   },
 
+  async aprovar(idCandidatura) {
+    try {
+      const response = await api.post(
+        "/api/CandidaturaApiController.php?action=aprovar",
+        { id: idCandidatura }
+      );
+      return response.data;
+    } catch (error) {
+      return { success: false, errors: ["Erro ao aprovar candidato"] };
+    }
+  },
+
   async verificar(idUsuario, idVaga) {
     try {
       const response = await api.get(
@@ -56,9 +68,9 @@ const CandidaturaController = {
       const response = await api.post(
         `/api/CandidaturaApiController.php?action=minhasCandidaturas&id=${id}`,
         JSON.stringify({ id_usuario: id }),
-      {
-        headers: { "Content-Type": "application/json" },
-      }
+        {
+          headers: { "Content-Type": "application/json" },
+        }
       );
       return response.data;
     } catch (error) {
@@ -72,16 +84,16 @@ const CandidaturaController = {
       const response = await api.post(
         `/api/CandidaturaApiController.php?action=cancelarCandidatura`,
         JSON.stringify({ id_candidatura: id }),
-      {
-        headers: { "Content-Type": "application/json" },
-      }
+        {
+          headers: { "Content-Type": "application/json" },
+        }
       );
       return response.data;
     } catch (error) {
       console.error(error);
       return { success: false, errors: ["Erro ao carregar detalhes da vaga."] };
     }
-  }
+  },
 };
 
 export default CandidaturaController;

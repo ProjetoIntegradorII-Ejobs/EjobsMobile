@@ -36,21 +36,10 @@ export default function CandidatosVaga({ route }) {
     const result = await CandidaturaController.aprovar(idCandidatura);
 
     if (result.success) {
-      Alert.alert("Sucesso", result.message);
+      Alert.alert("Sucesso", "Candidato aprovado!");
       carregar();
     } else {
       Alert.alert("Erro", result.errors?.[0] || "Erro ao aprovar.");
-    }
-  }
-
-  async function recusar(idCandidatura) {
-    const result = await CandidaturaController.recusar(idCandidatura);
-
-    if (result.success) {
-      Alert.alert("Sucesso", result.message);
-      carregar();
-    } else {
-      Alert.alert("Erro", result.errors?.[0] || "Erro ao recusar.");
     }
   }
 
@@ -76,37 +65,29 @@ export default function CandidatosVaga({ route }) {
             <Text>Telefone: {c.telefone || "Não informado"}</Text>
             <Text>Descrição: {c.descricao || "Sem descrição"}</Text>
 
-            {/* Status */}
+            {/* STATUS */}
             <Text style={styles.statusTitle}>Status:</Text>
             <Text
               style={[
                 styles.status,
-                c.candidatura_status === "APROVADO"
+                c.candidatura_status?.toUpperCase() === "APROVADO"
                   ? styles.aprovado
-                  : c.candidatura_status === "RECUSADO"
-                  ? styles.recusado
                   : styles.pendente,
               ]}
             >
               {c.candidatura_status}
             </Text>
 
-            {/* Botões */}
-            <View style={styles.actions}>
+            {/* BOTÃO APROVAR */}
+            {c.candidatura_status?.toUpperCase() !== "APROVADO" && (
               <TouchableOpacity
                 style={[styles.btn, styles.btnAprovar]}
                 onPress={() => aprovar(c.candidatura_id)}
               >
                 <Text style={styles.btnText}>Aprovar</Text>
               </TouchableOpacity>
+            )}
 
-              <TouchableOpacity
-                style={[styles.btn, styles.btnRecusar]}
-                onPress={() => recusar(c.candidatura_id)}
-              >
-                <Text style={styles.btnText}>Recusar</Text>
-              </TouchableOpacity>
-            </View>
           </View>
         ))
       )}
@@ -123,7 +104,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "#111",
   },
-
   center: { flex: 1, justifyContent: "center", alignItems: "center" },
   empty: { textAlign: "center", fontSize: 16, marginTop: 20 },
 
@@ -154,25 +134,15 @@ const styles = StyleSheet.create({
   },
 
   aprovado: { backgroundColor: "#dcfce7", color: "#166534" },
-  recusado: { backgroundColor: "#fee2e2", color: "#991b1b" },
   pendente: { backgroundColor: "#fef9c3", color: "#854d0e" },
 
-  actions: {
-    marginTop: 12,
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-
   btn: {
-    flex: 1,
+    marginTop: 12,
     padding: 10,
     borderRadius: 8,
     alignItems: "center",
-    marginHorizontal: 5,
   },
 
   btnAprovar: { backgroundColor: "#16a34a" },
-  btnRecusar: { backgroundColor: "#dc2626" },
-
   btnText: { color: "#fff", fontWeight: "bold" },
 });

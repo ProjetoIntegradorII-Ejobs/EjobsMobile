@@ -124,6 +124,22 @@ const VagasController = {
       return { success: false, vagas: [] };
     }
   },
+  async aprovarCandidato(idVaga, idUsuario) {
+    try {
+      const response = await api.post(
+        "/api/VagaApiController.php?action=aprovarCandidato",
+        {
+          idVaga,
+          idUsuario,
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      console.log("❌ Erro ao aprovar candidato:", error);
+      return { success: false, errors: ["Erro ao aprovar candidato"] };
+    }
+  },
 };
 
 export default VagasController;
