@@ -13,22 +13,35 @@ import UsuarioController from "../controllers/UsuarioController";
 
 export default function Perfil({ navigation }) {
   const [usuario, setUsuario] = useState(null);
-  const [form, setForm] = useState({ nome: "", email: "", telefone: "" });
+  const [email, setEmail] = useState("");
+
+  const [form, setForm] = useState({
+    nome: "",
+    telefone: "",
+    documento: "",
+    descricao: "",
+  });
+
   const [salvando, setSalvando] = useState(false);
 
   useEffect(() => {
     const carregarUsuario = async () => {
       const dados = await AsyncStorage.getItem("usuarioLogado");
       if (dados) {
-        const usuarioData = JSON.parse(dados);
-        setUsuario(usuarioData);
+        const user = JSON.parse(dados);
+        setUsuario(user);
+
+        setEmail(user.email || "");
+
         setForm({
-          nome: usuarioData.nome || "",
-          email: usuarioData.email || "",
-          telefone: usuarioData.telefone || "",
+          nome: user.nome || "",
+          telefone: user.telefone || "",
+          documento: user.documento || "",
+          descricao: user.descricao || "",
         });
       }
     };
+
     carregarUsuario();
   }, []);
 
@@ -40,7 +53,14 @@ export default function Perfil({ navigation }) {
     if (!usuario) return;
     setSalvando(true);
 
-    const dadosAtualizados = { ...usuario, ...form };
+    const dadosAtualizados = {
+      id: usuario.id,
+      nome: form.nome,
+      telefone: form.telefone,
+      documento: form.documento,
+      descricao: form.descricao,
+      // email NÃO é enviado
+    };
 
     try {
       const result = await UsuarioController.update(dadosAtualizados);
@@ -48,17 +68,13 @@ export default function Perfil({ navigation }) {
       if (!result.success) {
         Alert.alert("Erro", result.errors?.[0] || "Falha ao atualizar usuário.");
       } else {
-        setUsuario(result.usuario);
-        await AsyncStorage.setItem(
-          "usuarioLogado",
-          JSON.stringify(result.usuario)
-        );
+        const novoUsuario = {
+          ...usuario,
+          ...dadosAtualizados,
+        };
 
-        setForm({
-          nome: result.usuario.nome,
-          email: result.usuario.email,
-          telefone: result.usuario.telefone,
-        });
+        await AsyncStorage.setItem("usuarioLogado", JSON.stringify(novoUsuario));
+        setUsuario(novoUsuario);
 
         Alert.alert("Sucesso", "Dados atualizados com sucesso!");
       }
@@ -73,7 +89,7 @@ export default function Perfil({ navigation }) {
   if (!usuario) {
     return (
       <SafeAreaView style={styles.center}>
-        <Text>Carregando dados do usuário...</Text>
+        <Text>Carregando dados...</Text>
       </SafeAreaView>
     );
   }
@@ -81,6 +97,14 @@ export default function Perfil({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Editar Perfil</Text>
+
+      {/* Email bloqueado */}
+      <TextInput
+        style={[styles.input, styles.disabledInput]}
+        placeholder="Email"
+        value={email}
+        editable={false}
+      />
 
       <TextInput
         style={styles.input}
@@ -91,18 +115,28 @@ export default function Perfil({ navigation }) {
 
       <TextInput
         style={styles.input}
-        placeholder="Email"
-        value={form.email}
-        onChangeText={(v) => handleChange("email", v)}
-        keyboardType="email-address"
+        placeholder="Telefone"
+        keyboardType="phone-pad"
+        value={form.telefone}
+        onChangeText={(v) => handleChange("telefone", v)}
       />
 
       <TextInput
         style={styles.input}
-        placeholder="Telefone"
-        value={form.telefone}
-        onChangeText={(v) => handleChange("telefone", v)}
-        keyboardType="phone-pad"
+        placeholder="Documento"
+        keyboardType="numeric"
+        value={form.documento}
+        onChangeText={(v) => handleChange("documento", v)}
+      />
+
+      {/* Campo de descrição */}
+      <TextInput
+        style={[styles.input, styles.textArea]}
+        placeholder="Descrição"
+        value={form.descricao}
+        onChangeText={(v) => handleChange("descricao", v)}
+        multiline
+        numberOfLines={4}
       />
 
       <TouchableOpacity
@@ -124,13 +158,16 @@ export default function Perfil({ navigation }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 20, backgroundColor: "#fff" },
+
   center: { flex: 1, justifyContent: "center", alignItems: "center" },
+
   title: {
     fontSize: 22,
     fontWeight: "bold",
-    marginBottom: 20,
     color: "#2563eb",
+    marginBottom: 20,
   },
+
   input: {
     borderWidth: 1,
     borderColor: "#ccc",
@@ -138,6 +175,17 @@ const styles = StyleSheet.create({
     padding: 12,
     marginBottom: 15,
   },
+
+  disabledInput: {
+    backgroundColor: "#e5e7eb",
+    color: "#6b7280",
+  },
+
+  textArea: {
+    height: 100,
+    textAlignVertical: "top",
+  },
+
   button: {
     backgroundColor: "#2563eb",
     padding: 14,
@@ -145,11 +193,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 10,
   },
-  buttonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
+
+  buttonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+
   backText: {
+    marginTop: 15,
     color: "#2563eb",
     textAlign: "center",
-    marginTop: 15,
     fontWeight: "bold",
   },
 });
