@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
+import { useFocusEffect } from "@react-navigation/native"; // 🔥 IMPORTANTE
 import VagasController from "../controllers/VagasController";
 
 export default function Empresa({ navigation }) {
@@ -17,22 +18,25 @@ export default function Empresa({ navigation }) {
   const [vagas, setVagas] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function carregar() {
-      const dados = await AsyncStorage.getItem("usuarioLogado");
-      if (dados) {
-        const empresaData = JSON.parse(dados);
-        setEmpresa(empresaData);
+  // 🔥 Atualiza automaticamente quando voltar do Editar Perfil
+  useFocusEffect(
+    React.useCallback(() => {
+      async function carregar() {
+        const dados = await AsyncStorage.getItem("usuarioLogado");
+        if (dados) {
+          const empresaData = JSON.parse(dados);
+          setEmpresa(empresaData);
 
-        const response = await VagasController.listarPorEmpresa(empresaData.id);
-        if (response.success) {
-          setVagas(response.vagas);
+          const response = await VagasController.listarPorEmpresa(empresaData.id);
+          if (response.success) {
+            setVagas(response.vagas);
+          }
         }
+        setLoading(false);
       }
-      setLoading(false);
-    }
-    carregar();
-  }, []);
+      carregar();
+    }, [])
+  );
 
   const handleLogout = () => {
     Alert.alert("Sair", "Deseja realmente sair da conta?", [
@@ -92,6 +96,13 @@ export default function Empresa({ navigation }) {
         >
           <Ionicons name="add-circle-outline" size={36} color="#16a34a" />
           <Text style={styles.cardTexto}>Criar Vaga</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.botaoAzul}
+          onPress={() => navigation.navigate("EmpresaEditar")}
+        >
+          <Text style={styles.botaoTexto}>Editar Perfil</Text>
         </TouchableOpacity>
       </View>
 
@@ -157,6 +168,19 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   cardTexto: { fontSize: 14, color: "#374151" },
+  botaoAzul: {
+    flex: 1,
+    backgroundColor: "#2563eb",
+    padding: 15,
+    borderRadius: 10,
+    alignItems: "center",
+    marginHorizontal: 5,
+  },
+  botaoTexto: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 15,
+  },
   sectionTitle: {
     fontSize: 18,
     fontWeight: "bold",

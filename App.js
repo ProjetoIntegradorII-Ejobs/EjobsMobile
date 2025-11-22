@@ -17,6 +17,7 @@ import VagasAtivas from "./views/VagasAtivas";
 import EditarVaga from "./views/EditarVaga";
 import MinhasCandidaturas from "./views/MinhasCandidaturas";
 import CandidatosVaga from "./views/CandidatosVaga";
+import EmpresaEditar from "./views/EmpresaEditar"
 
 console.log("LOGIN COMPONENT =>", Login);
 
@@ -58,6 +59,7 @@ export default function App() {
         <Stack.Screen name="EditarVaga" component={EditarVaga} />
         <Stack.Screen name="MinhasCandidaturas" component={MinhasCandidaturas} />
         <Stack.Screen name="CandidatosVaga" component={CandidatosVaga} />
+        <Stack.Screen name="EmpresaEditar" component={EmpresaEditar} />
       </Stack.Navigator>
     </NavigationContainer>
   );
