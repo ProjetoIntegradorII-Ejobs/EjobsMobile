@@ -1,4 +1,5 @@
 import { useFocusEffect } from "@react-navigation/native";
+import Navbar from "../components/NavBar";
 import React, { useState, useCallback } from "react";
 import {
   View,
@@ -103,7 +104,10 @@ export default function UsuarioComum({ navigation }) {
         </TouchableOpacity>
 
       </View>
+      <Navbar navigation={navigation} />
+
     </SafeAreaView>
+    
   );
 }
 

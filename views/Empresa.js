@@ -12,6 +12,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
 import VagasController from "../controllers/VagasController";
+import Navbar from "../components/NavBar";
 
 export default function Empresa({ navigation }) {
   const [empresa, setEmpresa] = useState(null);
@@ -66,6 +67,7 @@ export default function Empresa({ navigation }) {
   }
 
   return (
+    <View style={{ flex: 1, backgroundColor: "#fff" }}>
     <ScrollView style={styles.container}>
       {/* HEADER */}
       <View style={styles.headerRow}>
@@ -156,6 +158,8 @@ export default function Empresa({ navigation }) {
         ))
       )}
     </ScrollView>
+    <Navbar navigation={navigation} />
+    </View>
   );
 }
 

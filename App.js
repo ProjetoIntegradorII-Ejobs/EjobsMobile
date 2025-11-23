@@ -17,6 +17,8 @@ import VagasAtivas from "./views/VagasAtivas";
 import EditarVaga from "./views/EditarVaga";
 import MinhasCandidaturas from "./views/MinhasCandidaturas";
 import CandidatosVaga from "./views/CandidatosVaga";
+import ListNotificacao from "./views/ListNotificacao";
+import NotificacaoDetalhes from "./views/NotificacaoDetalhes";
 import EmpresaEditar from "./views/EmpresaEditar"
 import AdminPanel from "./views/AdminPanel";
 import GerenciarCategorias from "./views/GerenciarCategorias";
@@ -47,6 +49,22 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName={initialRoute}>
+        <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen name="Login" component={Login} />
+        <Stack.Screen name="Cadastro" component={Cadastro} />
+        <Stack.Screen name="FormCadastro" component={FormCadastro} />
+        <Stack.Screen name="FormVagas" component={FormVagas} />
+        <Stack.Screen name="Vagas" component={VagasList} />
+        <Stack.Screen name="UsuarioComum" component={UsuarioComum} />
+        <Stack.Screen name="VagaDetalhes" component={VagaDetalhes} />
+        <Stack.Screen name="Perfil" component={Perfil} options={{ headerShown: false }}/>
+        <Stack.Screen name="Empresa" component={Empresa} />
+        <Stack.Screen name="VagasAtivas" component={VagasAtivas} />
+        <Stack.Screen name="EditarVaga" component={EditarVaga} />
+        <Stack.Screen name="MinhasCandidaturas" component={MinhasCandidaturas} />
+        <Stack.Screen name="CandidatosVaga" component={CandidatosVaga} />
+        <Stack.Screen name="ListNotificacao" component={ListNotificacao} />
+        <Stack.Screen name="NotificacaoDetalhes" component={NotificacaoDetalhes} />
         <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
         <Stack.Screen name="Login" component={Login} options={{ headerShown: false }}/>
         <Stack.Screen name="Cadastro" component={Cadastro} options={{ headerShown: false }}/>
