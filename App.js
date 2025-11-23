@@ -18,8 +18,10 @@ import EditarVaga from "./views/EditarVaga";
 import MinhasCandidaturas from "./views/MinhasCandidaturas";
 import CandidatosVaga from "./views/CandidatosVaga";
 import EmpresaEditar from "./views/EmpresaEditar"
+import AdminPanel from "./views/AdminPanel";
+import GerenciarCategorias from "./views/GerenciarCategorias";
+import GerenciarCargos from "./views/GerenciarCargos";
 
-console.log("LOGIN COMPONENT =>", Login);
 
 const Stack = createNativeStackNavigator();
 
@@ -60,6 +62,9 @@ export default function App() {
         <Stack.Screen name="MinhasCandidaturas" component={MinhasCandidaturas} options={{ headerShown: false }}/>
         <Stack.Screen name="CandidatosVaga" component={CandidatosVaga} options={{ headerShown: false }}/>
         <Stack.Screen name="EmpresaEditar" component={EmpresaEditar} options={{ headerShown: false }}/>
+        <Stack.Screen name="AdminPanel" component={AdminPanel} options={{ headerShown: false }}/>
+        <Stack.Screen name="GerenciarCategorias" component={GerenciarCategorias} options={{ headerShown: false }} />
+        <Stack.Screen name="GerenciarCargos" component={GerenciarCargos} />
       </Stack.Navigator>
     </NavigationContainer>
   );

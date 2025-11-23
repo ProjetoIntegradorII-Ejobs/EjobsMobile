@@ -47,6 +47,8 @@ export default function Login({ navigation }) {
             navigation.replace("UsuarioComum");
           } else if (tipo === 3) {
             navigation.replace("Empresa");
+          } else if (tipo === 2) {
+            navigation.replace("AdminPanel");
           } else {
             navigation.replace("Home");
           }
