@@ -45,21 +45,21 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName={initialRoute}>
-        <Stack.Screen name="Home" component={Home} />
-        <Stack.Screen name="Login" component={Login} />
-        <Stack.Screen name="Cadastro" component={Cadastro} />
-        <Stack.Screen name="FormCadastro" component={FormCadastro} />
-        <Stack.Screen name="FormVagas" component={FormVagas} />
-        <Stack.Screen name="Vagas" component={VagasList} />
-        <Stack.Screen name="UsuarioComum" component={UsuarioComum} />
-        <Stack.Screen name="VagaDetalhes" component={VagaDetalhes} />
-        <Stack.Screen name="Perfil" component={Perfil} options={{ headerShown: false }}/>
-        <Stack.Screen name="Empresa" component={Empresa} />
-        <Stack.Screen name="VagasAtivas" component={VagasAtivas} />
-        <Stack.Screen name="EditarVaga" component={EditarVaga} />
-        <Stack.Screen name="MinhasCandidaturas" component={MinhasCandidaturas} />
-        <Stack.Screen name="CandidatosVaga" component={CandidatosVaga} />
-        <Stack.Screen name="EmpresaEditar" component={EmpresaEditar} />
+        <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
+        <Stack.Screen name="Login" component={Login} options={{ headerShown: false }}/>
+        <Stack.Screen name="Cadastro" component={Cadastro} options={{ headerShown: false }}/>
+        <Stack.Screen name="FormCadastro" component={FormCadastro} options={{ headerShown: false }}/>
+        <Stack.Screen name="FormVagas" component={FormVagas} options={{ headerShown: false }}/>
+        <Stack.Screen name="Vagas" component={VagasList} options={{ headerShown: false }}/>
+        <Stack.Screen name="UsuarioComum" component={UsuarioComum} options={{ headerShown: false }}/>
+        <Stack.Screen name="VagaDetalhes" component={VagaDetalhes} options={{ headerShown: false }}/>
+        <Stack.Screen name="Perfil" component={Perfil} options={{ headerShown: false }} />
+        <Stack.Screen name="Empresa" component={Empresa} options={{ headerShown: false }}/>
+        <Stack.Screen name="VagasAtivas" component={VagasAtivas} options={{ headerShown: false }}/>
+        <Stack.Screen name="EditarVaga" component={EditarVaga} options={{ headerShown: false }}/>
+        <Stack.Screen name="MinhasCandidaturas" component={MinhasCandidaturas} options={{ headerShown: false }}/>
+        <Stack.Screen name="CandidatosVaga" component={CandidatosVaga} options={{ headerShown: false }}/>
+        <Stack.Screen name="EmpresaEditar" component={EmpresaEditar} options={{ headerShown: false }}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

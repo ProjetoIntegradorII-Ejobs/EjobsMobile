@@ -7,6 +7,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   StatusBar,
+  Image,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
@@ -33,100 +34,149 @@ export default function UsuarioComum({ navigation }) {
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor="#2563eb" barStyle="light-content" />
 
+      {/* HEADER */}
       <View style={styles.header}>
-        <Text style={styles.logo}>EJobs</Text>
-        {usuario && (
-          <View style={styles.userBadge}>
-            <Ionicons name="person-circle-outline" size={24} color="#fff" />
-            <View>
-              <Text style={styles.userName}>{usuario.nome}</Text>
-              <Text style={styles.userType}>Candidato</Text>
-            </View>
-          </View>
-        )}
+        <View>
+          <Text style={styles.greeting}>Olá,</Text>
+          <Text style={styles.userNameHeader}>
+            {usuario?.nome?.split(" ")[0] || "Usuário"}
+          </Text>
+        </View>
+
+        <Image
+          style={styles.avatar}
+          source={{
+            uri:
+              "https://cdn-icons-png.flaticon.com/512/3177/3177440.png",
+          }}
+        />
       </View>
 
-      <View style={styles.content}>
-        <Text style={styles.welcome}>
-          Bem-vindo, {usuario?.nome?.split(" ")[0]}!
-        </Text>
+      {/* SUBHEADER */}
+      <View style={styles.subheader}>
         <Text style={styles.subtitle}>
-          Explore oportunidades e gerencie seu perfil.
+          Gerencie sua jornada profissional
         </Text>
+      </View>
+
+      {/* MENU PRINCIPAL */}
+      <View style={styles.menuContainer}>
 
         <TouchableOpacity
-          style={[styles.button, { backgroundColor: "#2563eb" }]}
+          style={styles.menuCard}
           onPress={() => navigation.navigate("Vagas")}
         >
-          <Ionicons name="briefcase-outline" size={18} color="#fff" />
-          <Text style={styles.buttonText}>Ver Vagas</Text>
+          <Ionicons name="briefcase-outline" size={35} color="#2563eb" />
+          <Text style={styles.menuTitle}>Explorar Vagas</Text>
+          <Text style={styles.menuDesc}>Veja oportunidades disponíveis</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.button, { backgroundColor: "#2563eb" }]}
+          style={styles.menuCard}
           onPress={() => navigation.navigate("MinhasCandidaturas")}
         >
-          <Ionicons name="briefcase-outline" size={18} color="#fff" />
-          <Text style={styles.buttonText}>Minhas Candidaturas</Text>
+          <Ionicons name="document-text-outline" size={35} color="#2563eb" />
+          <Text style={styles.menuTitle}>Minhas Candidaturas</Text>
+          <Text style={styles.menuDesc}>Acompanhe seu progresso</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.button, { backgroundColor: "#10b981" }]}
+          style={styles.menuCard}
           onPress={() => navigation.navigate("Perfil")}
         >
-          <Ionicons name="create-outline" size={18} color="#fff" />
-          <Text style={styles.buttonText}>Editar Perfil</Text>
+          <Ionicons name="person-outline" size={35} color="#2563eb" />
+          <Text style={styles.menuTitle}>Meu Perfil</Text>
+          <Text style={styles.menuDesc}>Editar informações</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.button, { backgroundColor: "#ef4444" }]}
+          style={[styles.menuCard, { borderColor: "#dc2626" }]}
           onPress={handleLogout}
         >
-          <Ionicons name="log-out-outline" size={18} color="#fff" />
-          <Text style={styles.buttonText}>Sair</Text>
+          <Ionicons name="log-out-outline" size={35} color="#dc2626" />
+          <Text style={[styles.menuTitle, { color: "#dc2626" }]}>
+            Sair
+          </Text>
+          <Text style={[styles.menuDesc, { color: "#dc2626" }]}>
+            Encerrar sessão
+          </Text>
         </TouchableOpacity>
+
       </View>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f8fafc" },
+  container: {
+    flex: 1,
+    backgroundColor: "#f8fafc",
+  },
+
   header: {
     flexDirection: "row",
-    alignItems: "center",
     justifyContent: "space-between",
+    paddingHorizontal: 20,
+    paddingTop: 15,
+    paddingBottom: 10,
     backgroundColor: "#2563eb",
-    paddingVertical: 12,
-    paddingHorizontal: 18,
-    elevation: 3,
   },
-  logo: {
-    fontSize: 20,
-    fontWeight: "bold",
+
+  greeting: {
+    color: "#e0e7ff",
+    fontSize: 16,
+  },
+
+  userNameHeader: {
     color: "#fff",
+    fontSize: 22,
+    fontWeight: "bold",
+    marginTop: -3,
   },
-  userBadge: { flexDirection: "row", alignItems: "center", gap: 8 },
-  userName: { color: "#fff", fontWeight: "600", fontSize: 14 },
-  userType: { color: "#c7d2fe", fontSize: 12 },
-  content: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+
+  avatar: {
+    width: 55,
+    height: 55,
+    borderRadius: 50,
+    borderWidth: 2,
+    borderColor: "#fff",
+  },
+
+  subheader: {
+    marginTop: 12,
     paddingHorizontal: 20,
   },
-  welcome: { fontSize: 22, fontWeight: "bold", color: "#111827", marginBottom: 4 },
-  subtitle: { color: "#6b7280", marginBottom: 25, textAlign: "center" },
-  button: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    marginBottom: 12,
-    width: "80%",
-    justifyContent: "center",
+
+  subtitle: {
+    fontSize: 15,
+    color: "#475569",
   },
-  buttonText: { color: "#fff", fontWeight: "600", fontSize: 16 },
+
+  menuContainer: {
+    marginTop: 25,
+    paddingHorizontal: 20,
+  },
+
+  menuCard: {
+    backgroundColor: "#fff",
+    padding: 18,
+    borderRadius: 14,
+    marginBottom: 18,
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
+    elevation: 2,
+  },
+
+  menuTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginTop: 10,
+    color: "#1e293b",
+  },
+
+  menuDesc: {
+    marginTop: 3,
+    fontSize: 13,
+    color: "#64748b",
+  },
 });

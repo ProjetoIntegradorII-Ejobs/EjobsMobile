@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
-import { useFocusEffect } from "@react-navigation/native"; // 🔥 IMPORTANTE
+import { useFocusEffect } from "@react-navigation/native";
 import VagasController from "../controllers/VagasController";
 
 export default function Empresa({ navigation }) {
@@ -18,7 +18,6 @@ export default function Empresa({ navigation }) {
   const [vagas, setVagas] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // 🔥 Atualiza automaticamente quando voltar do Editar Perfil
   useFocusEffect(
     React.useCallback(() => {
       async function carregar() {
@@ -27,7 +26,10 @@ export default function Empresa({ navigation }) {
           const empresaData = JSON.parse(dados);
           setEmpresa(empresaData);
 
-          const response = await VagasController.listarPorEmpresa(empresaData.id);
+          const response = await VagasController.listarPorEmpresa(
+            empresaData.id
+          );
+
           if (response.success) {
             setVagas(response.vagas);
           }
@@ -65,50 +67,79 @@ export default function Empresa({ navigation }) {
 
   return (
     <ScrollView style={styles.container}>
+      {/* HEADER */}
       <View style={styles.headerRow}>
-        <Text style={styles.bemvindo}>
-          Bem-vindo(a), {empresa?.nome || "Empresa"}!
-        </Text>
+        <View>
+          <Text style={styles.bemvindo}>
+            {empresa?.nome || "Empresa"}
+          </Text>
+          <Text style={styles.subLabel}>Painel da Empresa</Text>
+        </View>
 
         <TouchableOpacity onPress={handleLogout} style={styles.logoutBtn}>
-          <Ionicons name="log-out-outline" size={22} color="#ef4444" />
-          <Text style={styles.logoutText}>Sair</Text>
+          <Ionicons name="log-out-outline" size={24} color="#ef4444" />
         </TouchableOpacity>
       </View>
 
-      <Text style={styles.subtitulo}>
-        Gerencie suas vagas de forma eficiente
-      </Text>
+      {/* DASHBOARD */}
+      <View style={styles.dashboardRow}>
+        <View style={styles.dashboardCard}>
+          <Ionicons name="briefcase-outline" size={32} color="#2563eb" />
+          <Text style={styles.cardNumero}>{vagas.length}</Text>
+          <Text style={styles.cardTexto}>Vagas criadas</Text>
+        </View>
 
+      </View>
+
+      {/* MENU */}
       <View style={styles.actions}>
         <TouchableOpacity
-          style={styles.card}
+          style={styles.menuButton}
           onPress={() => navigation.navigate("VagasAtivas")}
         >
-          <Ionicons name="briefcase-outline" size={36} color="#2563eb" />
-          <Text style={styles.cardNumero}>{vagas.length}</Text>
-          <Text style={styles.cardTexto}>Vagas Ativas</Text>
+          <Ionicons name="list-outline" size={28} color="#2563eb" />
+          <View>
+            <Text style={styles.menuTitle}>Gerenciar Vagas</Text>
+            <Text style={styles.menuDesc}>
+              Editar, ativar e acompanhar candidatos
+            </Text>
+          </View>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={styles.card}
+          style={styles.menuButton}
           onPress={() => navigation.navigate("FormVagas")}
         >
-          <Ionicons name="add-circle-outline" size={36} color="#16a34a" />
-          <Text style={styles.cardTexto}>Criar Vaga</Text>
+          <Ionicons name="add-circle-outline" size={28} color="#16a34a" />
+          <View>
+            <Text style={[styles.menuTitle, { color: "#16a34a" }]}>
+              Criar Nova Vaga
+            </Text>
+            <Text style={styles.menuDesc}>
+              Publique oportunidades para candidatos
+            </Text>
+          </View>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={styles.botaoAzul}
+          style={styles.menuButton}
           onPress={() => navigation.navigate("EmpresaEditar")}
         >
-          <Text style={styles.botaoTexto}>Editar Perfil</Text>
+          <Ionicons name="settings-outline" size={28} color="#2563eb" />
+          <View>
+            <Text style={styles.menuTitle}>Editar Perfil</Text>
+            <Text style={styles.menuDesc}>
+              Atualize suas informações e dados
+            </Text>
+          </View>
         </TouchableOpacity>
       </View>
 
-      <Text style={styles.sectionTitle}>Vagas Ativas</Text>
+      {/* LISTAGEM DE VAGAS */}
+      <Text style={styles.sectionTitle}>Últimas Vagas</Text>
+
       {vagas.length === 0 ? (
-        <Text style={{ color: "#6b7280" }}>Nenhuma vaga cadastrada.</Text>
+        <Text style={{ color: "#6b7280" }}>Nenhuma vaga cadastrada ainda.</Text>
       ) : (
         vagas.map((vaga) => (
           <View key={vaga.id} style={styles.vagaCard}>
@@ -130,71 +161,100 @@ export default function Empresa({ navigation }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#fff", padding: 16 },
+
   center: { flex: 1, justifyContent: "center", alignItems: "center" },
+
   headerRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    marginTop: 10,
   },
-  bemvindo: { fontSize: 22, fontWeight: "bold", color: "#111827", flex: 1 },
-  logoutBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-  },
-  logoutText: {
-    color: "#ef4444",
-    fontWeight: "bold",
-    fontSize: 14,
-  },
-  subtitulo: { color: "#6b7280", marginBottom: 16 },
-  actions: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginVertical: 15,
-  },
-  card: {
-    flex: 1,
-    backgroundColor: "#f3f4f6",
-    borderRadius: 10,
-    alignItems: "center",
-    padding: 15,
-    marginHorizontal: 5,
-  },
-  cardNumero: {
+
+  bemvindo: {
     fontSize: 22,
     fontWeight: "bold",
-    color: "#2563eb",
+    color: "#1e3a8a",
+  },
+
+  subLabel: {
+    color: "#64748b",
+    fontSize: 12,
+    marginTop: -3,
+  },
+
+  logoutBtn: { padding: 6 },
+
+  dashboardRow: {
+    flexDirection: "row",
+    marginTop: 20,
+  },
+
+  dashboardCard: {
+    flex: 1,
+    backgroundColor: "#f1f5f9",
+    padding: 16,
+    borderRadius: 10,
+    marginHorizontal: 5,
+    alignItems: "center",
+    elevation: 2,
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
+  },
+
+  cardNumero: {
+    fontSize: 26,
+    fontWeight: "bold",
+    color: "#1e293b",
     marginTop: 4,
   },
-  cardTexto: { fontSize: 14, color: "#374151" },
-  botaoAzul: {
-    flex: 1,
-    backgroundColor: "#2563eb",
-    padding: 15,
-    borderRadius: 10,
+
+  cardTexto: { fontSize: 13, color: "#64748b" },
+
+  actions: { marginTop: 25 },
+
+  menuButton: {
+    flexDirection: "row",
     alignItems: "center",
-    marginHorizontal: 5,
+    backgroundColor: "#f9fafb",
+    padding: 18,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
+    marginBottom: 16,
+    elevation: 1,
+    gap: 12,
   },
-  botaoTexto: {
-    color: "#fff",
+
+  menuTitle: {
+    fontSize: 17,
     fontWeight: "bold",
-    fontSize: 15,
+    color: "#1e293b",
   },
+
+  menuDesc: {
+    fontSize: 13,
+    color: "#475569",
+  },
+
   sectionTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    marginTop: 20,
-    marginBottom: 10,
+    marginTop: 25,
+    marginBottom: 12,
+    color: "#111827",
   },
+
   vagaCard: {
-    backgroundColor: "#f9fafb",
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 10,
+    backgroundColor: "#f8fafc",
+    borderRadius: 10,
+    padding: 14,
+    marginBottom: 12,
     borderWidth: 1,
     borderColor: "#e5e7eb",
   },
-  vagaTitulo: { fontSize: 16, fontWeight: "bold" },
-  vagaInfo: { fontSize: 14, color: "#374151" },
+
+  vagaTitulo: { fontSize: 16, fontWeight: "bold", color: "#111827" },
+
+  vagaInfo: { color: "#374151", marginTop: 3 },
 });

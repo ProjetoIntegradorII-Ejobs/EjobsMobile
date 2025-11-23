@@ -9,6 +9,7 @@ import {
   TextInput,
 } from "react-native";
 import VagasController from "../controllers/VagasController";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function VagasList({ navigation }) {
   const [vagas, setVagas] = useState([]);
@@ -30,7 +31,6 @@ export default function VagasList({ navigation }) {
     carregarVagas();
   }, []);
 
-  // Função de pesquisa
   async function pesquisar(texto) {
     setBusca(texto);
     setCarregandoBusca(true);
@@ -56,23 +56,27 @@ export default function VagasList({ navigation }) {
   if (loading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator size="large" color="#000" />
+        <ActivityIndicator size="large" color="#2563eb" />
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
-      {/* Campo de busca */}
-      <TextInput
-        placeholder="Buscar vaga..."
-        value={busca}
-        onChangeText={pesquisar}
-        style={styles.inputBusca}
-      />
+      {/* Barra de busca estilizada */}
+      <View style={styles.searchBox}>
+        <Ionicons name="search-outline" size={20} color="#6b7280" />
+        <TextInput
+          placeholder="Buscar vagas por título ou descrição..."
+          value={busca}
+          onChangeText={pesquisar}
+          style={styles.inputBusca}
+        />
+      </View>
 
-      {/* Indicador de carregamento da busca */}
-      {carregandoBusca && <ActivityIndicator size="small" color="#2563eb" />}
+      {carregandoBusca && (
+        <ActivityIndicator size="small" color="#2563eb" />
+      )}
 
       {/* Lista de vagas */}
       {vagas.length === 0 ? (
@@ -88,9 +92,25 @@ export default function VagasList({ navigation }) {
                 navigation.navigate("VagaDetalhes", { id: item.id })
               }
             >
-              <Text style={styles.titulo}>{item.titulo}</Text>
-              <Text numberOfLines={2}>{item.descricao}</Text>
-              <Text style={styles.salario}>Salário: R$ {item.salario}</Text>
+              <View style={styles.cardHeader}>
+                <Text style={styles.titulo}>{item.titulo}</Text>
+                <Ionicons
+                  name="arrow-forward-circle-outline"
+                  size={22}
+                  color="#2563eb"
+                />
+              </View>
+
+              <Text style={styles.descricao} numberOfLines={2}>
+                {item.descricao}
+              </Text>
+
+              <View style={styles.infoRow}>
+                <Ionicons name="cash-outline" size={16} color="#2563eb" />
+                <Text style={styles.salario}>
+                  {item.salario ? `R$ ${item.salario}` : "A combinar"}
+                </Text>
+              </View>
             </TouchableOpacity>
           )}
         />
@@ -102,34 +122,69 @@ export default function VagasList({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 10,
+    padding: 14,
     backgroundColor: "#fff",
   },
 
-  inputBusca: {
-    backgroundColor: "#f5f5f5",
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 10,
-    fontSize: 16,
+  /* 🔍 Barra de busca estilo profissional */
+  searchBox: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#f3f4f6",
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderRadius: 10,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "#e5e7eb",
   },
 
+  inputBusca: {
+    flex: 1,
+    marginLeft: 8,
+    fontSize: 15,
+  },
+
+  /* Cards */
   card: {
-    backgroundColor: "#f5f5f5",
+    backgroundColor: "#f9fafb",
     padding: 15,
-    borderRadius: 8,
-    marginBottom: 10,
+    borderRadius: 10,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "#e5e7eb",
+    elevation: 1,
+  },
+
+  cardHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 6,
   },
 
   titulo: {
     fontWeight: "bold",
     fontSize: 18,
-    marginBottom: 5,
+    color: "#1e293b",
+    flex: 1,
+  },
+
+  descricao: {
+    color: "#6b7280",
+    marginBottom: 10,
+  },
+
+  infoRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 5,
   },
 
   salario: {
-    marginTop: 5,
+    marginLeft: 6,
     fontWeight: "600",
+    fontSize: 15,
+    color: "#2563eb",
   },
 
   center: {
@@ -142,6 +197,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 16,
     marginTop: 20,
-    color: "#555",
+    color: "#6b7280",
   },
 });
