@@ -37,10 +37,14 @@ export default function Navbar({ navigation }) {
   return (
     <View
       style={{
-        flexDirection: "row",
-        justifyContent: "space-around",
-        alignItems: "center",
-        backgroundColor: "#2563eb",
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        backgroundColor: '#2563eb',
         paddingVertical: 10,
       }}
     >
