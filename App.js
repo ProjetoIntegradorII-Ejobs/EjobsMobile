@@ -27,6 +27,8 @@ import AdminCadastrarCategoria from "./views/AdminCadastrarCategorias";
 import AdminEditarCategoria from "./views/AdminEditarCategorias";
 import ListNotificacao from "./views/ListNotificacao";
 import NotificacaoDetalhes from "./views/NotificacaoDetalhes";
+import GerenciarUsuarios from "./views/GerenciarUsuarios";
+
 
 const Stack = createNativeStackNavigator();
 
@@ -162,6 +164,10 @@ export default function App() {
         <Stack.Screen
           name="NotificacaoDetalhes"
           component={NotificacaoDetalhes}
+        />
+         <Stack.Screen
+          name="GerenciarUsuarios"
+          component={GerenciarUsuarios}
         />
       </Stack.Navigator>
     </NavigationContainer>

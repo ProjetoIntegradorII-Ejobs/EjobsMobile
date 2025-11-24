@@ -112,18 +112,19 @@ const AdminController = {
     }
   },
 
-  async alterarStatusUsuario(id, ativo) {
-    try {
-      const response = await api.post(
-        "/api/UsuarioApiController.php?action=alterarStatus",
-        JSON.stringify({ id, ativo }),
-        { headers: { "Content-Type": "application/json" } }
-      );
-      return response.data;
-    } catch {
-      return { success: false, error: "Erro ao alterar status do usuário" };
-    }
-  },
+  async alterarStatusUsuario(id, status) {
+  try {
+    const response = await api.post(
+      "/api/UsuarioApiController.php?action=alterarStatus",
+      JSON.stringify({ id, status }), // agora bate com o PHP
+      { headers: { "Content-Type": "application/json" } }
+    );
+    return response.data;
+  } catch {
+    return { success: false, error: "Erro ao alterar status do usuário" };
+  }
+},
+
 
   async listarVagasAdmin() {
     try {
