@@ -112,19 +112,42 @@ const AdminController = {
     }
   },
 
-  async alterarStatusUsuario(id, status) {
-  try {
-    const response = await api.post(
-      "/api/UsuarioApiController.php?action=alterarStatus",
-      JSON.stringify({ id, status }), // agora bate com o PHP
-      { headers: { "Content-Type": "application/json" } }
-    );
-    return response.data;
-  } catch {
-    return { success: false, error: "Erro ao alterar status do usuário" };
-  }
-},
+  async listarEmpresasPendentes() {
+    try {
+      const response = await api.get(
+        "/api/UsuarioApiController.php?action=listarPendentes"
+      );
+      return response.data;
+    } catch {
+      return { success: false, error: "Erro ao listar empresas pendentes" };
+    }
+  },
 
+  async aprovarEmpresa(id) {
+    try {
+      const response = await api.post(
+        "/api/UsuarioApiController.php?action=aprovarEmpresa",
+        JSON.stringify({ id }),
+        { headers: { "Content-Type": "application/json" } }
+      );
+      return response.data;
+    } catch {
+      return { success: false, error: "Erro ao aprovar empresa" };
+    }
+  },
+
+  async alterarStatusUsuario(id, status) {
+    try {
+      const response = await api.post(
+        "/api/UsuarioApiController.php?action=alterarStatus",
+        JSON.stringify({ id, status }), // agora bate com o PHP
+        { headers: { "Content-Type": "application/json" } }
+      );
+      return response.data;
+    } catch {
+      return { success: false, error: "Erro ao alterar status do usuário" };
+    }
+  },
 
   async listarVagasAdmin() {
     try {

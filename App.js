@@ -28,7 +28,7 @@ import AdminEditarCategoria from "./views/AdminEditarCategorias";
 import ListNotificacao from "./views/ListNotificacao";
 import NotificacaoDetalhes from "./views/NotificacaoDetalhes";
 import GerenciarUsuarios from "./views/GerenciarUsuarios";
-
+import EmpresasPendentes from "./views/EmpresasPendentes";
 
 const Stack = createNativeStackNavigator();
 
@@ -158,16 +158,19 @@ export default function App() {
           component={AdminEditarCategoria}
         />
         <Stack.Screen 
-        name="ListNotificacao" 
-        component={ListNotificacao} 
-        />
+          name="ListNotificacao" 
+          component={ListNotificacao} />
         <Stack.Screen
           name="NotificacaoDetalhes"
           component={NotificacaoDetalhes}
         />
-         <Stack.Screen
-          name="GerenciarUsuarios"
-          component={GerenciarUsuarios}
+        <Stack.Screen 
+          name="GerenciarUsuarios" 
+          component={GerenciarUsuarios} />
+        <Stack.Screen
+          name="EmpresasPendentes"
+          component={EmpresasPendentes}
+          options={{ headerShown: false }}
         />
       </Stack.Navigator>
     </NavigationContainer>

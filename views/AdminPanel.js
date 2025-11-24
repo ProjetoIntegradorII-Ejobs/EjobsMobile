@@ -83,6 +83,20 @@ export default function AdminPanel({ navigation }) {
           </TouchableOpacity>
         </View>
 
+        <View style={styles.card}>
+          <Ionicons name="alert-circle" size={40} color="#f59e0b" />
+          <Text style={styles.cardNumero}>{dashboard.totalPendentes}</Text>
+          <Text style={styles.cardLabel}>Empresas Pendentes</Text>
+
+          <TouchableOpacity
+            style={[styles.acaoBotao, { backgroundColor: "#f59e0b" }]}
+            onPress={() => navigation.navigate("EmpresasPendentes")}
+          >
+            <Ionicons name="checkmark-done" size={20} color="#fff" />
+            <Text style={styles.acaoTexto}>Aprovar Empresas</Text>
+          </TouchableOpacity>
+        </View>
+
         {/* Cargos */}
         <View style={styles.card}>
           <Ionicons name="person" size={40} color="#2563eb" />
@@ -98,8 +112,6 @@ export default function AdminPanel({ navigation }) {
           </TouchableOpacity>
         </View>
       </View>
-
-      
     </ScrollView>
   );
 }

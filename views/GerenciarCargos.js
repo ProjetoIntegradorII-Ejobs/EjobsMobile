@@ -64,32 +64,33 @@ export default function GerenciarCargos({ navigation }) {
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.titulo}>Lista de Cargos</Text>
+      <Text style={styles.titulo}>Gerenciar Cargos</Text>
 
+      {/* Botão Novo */}
       <TouchableOpacity
-        style={[styles.acaoBotao, { backgroundColor: "#16a34a" }]}
+        style={styles.btnAdd}
         onPress={() => navigation.navigate("AdminCadastrarCargos")}
       >
-        <Ionicons name="add-circle" size={20} color="#fff" />
-        <Text style={styles.acaoTexto}>Novo Cargo</Text>
+        <Ionicons name="add" size={20} color="#fff" />
+        <Text style={styles.btnAddTexto}>Novo Cargo</Text>
       </TouchableOpacity>
 
-      {/* Cabeçalho tabela */}
-      <View style={styles.tabelaCabecalho}>
-        <Text style={[styles.coluna, { flex: 1 }]}>ID</Text>
-        <Text style={[styles.coluna, { flex: 3 }]}>Nome</Text>
-        <Text style={[styles.coluna, { flex: 2 }]}></Text>
+      {/* Cabeçalho */}
+      <View style={styles.header}>
+        <Text style={[styles.headerText, { flex: 1 }]}>ID</Text>
+        <Text style={[styles.headerText, { flex: 4 }]}>Nome</Text>
+        <Text style={[styles.headerText, { flex: 2 }]}>Ações</Text>
       </View>
 
-      {/* Linhas */}
+      {/* Lista */}
       {cargos.map((cargo) => (
-        <View key={cargo.id} style={styles.tabelaLinha}>
-          <Text style={[styles.coluna, { flex: 1 }]}>{cargo.id}</Text>
-          <Text style={[styles.coluna, { flex: 3 }]}>{cargo.nome}</Text>
+        <View key={cargo.id} style={styles.row}>
+          <Text style={[styles.rowText, { flex: 1 }]}>{cargo.id}</Text>
+          <Text style={[styles.rowText, { flex: 4 }]}>{cargo.nome}</Text>
 
-          <View style={[styles.botoes]}>
+          <View style={styles.actions}>
             <TouchableOpacity
-              style={[styles.botaoAcao, styles.botaoAzul]}
+              style={[styles.actionBtn, styles.editBtn]}
               onPress={() =>
                 navigation.navigate("AdminEditarCargo", {
                   id: cargo.id,
@@ -97,14 +98,14 @@ export default function GerenciarCargos({ navigation }) {
                 })
               }
             >
-              <Text style={styles.textoBotao}>Alterar</Text>
+              <Ionicons name="create-outline" size={18} color="#fff" />
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.botaoAcao, styles.botaoVermelho]}
+              style={[styles.actionBtn, styles.deleteBtn]}
               onPress={() => excluirCargo(cargo.id)}
             >
-              <Text style={styles.textoBotao}>Excluir</Text>
+              <Ionicons name="trash-outline" size={18} color="#fff" />
             </TouchableOpacity>
           </View>
         </View>
@@ -115,49 +116,78 @@ export default function GerenciarCargos({ navigation }) {
 
 const styles = StyleSheet.create({
   container: { padding: 15, backgroundColor: "#fff" },
+
   titulo: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: "bold",
-    color: "#111827",
     textAlign: "center",
-    marginVertical: 15,
+    marginBottom: 20,
+    color: "#111827",
   },
-  botaoInserir: {
+
+  btnAdd: {
     backgroundColor: "#16a34a",
+    padding: 12,
+    borderRadius: 10,
     flexDirection: "row",
     alignItems: "center",
-    padding: 10,
-    borderRadius: 8,
-    width: 110,
-    marginBottom: 15,
+    justifyContent: "center",
+    marginBottom: 20,
   },
-  textoInserir: { color: "#fff", fontWeight: "bold", marginLeft: 5 },
-  tabelaCabecalho: {
-    flexDirection: "row",
-    paddingVertical: 8,
-    borderBottomWidth: 1,
-    borderColor: "#e5e7eb",
+  btnAddTexto: {
+    color: "#fff",
+    fontWeight: "bold",
+    marginLeft: 8,
+    fontSize: 16,
   },
-  tabelaLinha: {
+
+  header: {
     flexDirection: "row",
+    backgroundColor: "#e5e7eb",
     paddingVertical: 10,
+    paddingHorizontal: 5,
+    borderRadius: 8,
+  },
+  headerText: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "#374151",
+  },
+
+  row: {
+    flexDirection: "row",
+    paddingVertical: 14,
     borderBottomWidth: 1,
     borderColor: "#e5e7eb",
     alignItems: "center",
   },
-  coluna: { fontSize: 14, color: "#374151" },
-  botoes: {
+  rowText: {
+    fontSize: 15,
+    color: "#374151",
+  },
+
+  actions: {
     flexDirection: "row",
     flex: 2,
-    justifyContent: "space-between",
+    justifyContent: "flex-end",
+    gap: 10,
   },
-  botaoAcao: {
-    paddingVertical: 6,
-    paddingHorizontal: 10,
+
+  actionBtn: {
+    padding: 8,
     borderRadius: 6,
   },
-  botaoAzul: { backgroundColor: "#2563eb" },
-  botaoVermelho: { backgroundColor: "#dc2626" },
-  textoBotao: { color: "#fff", fontWeight: "bold" },
-  center: { flex: 1, alignItems: "center", justifyContent: "center" },
+
+  editBtn: {
+    backgroundColor: "#2563eb",
+  },
+  deleteBtn: {
+    backgroundColor: "#dc2626",
+  },
+
+  center: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
 });
