@@ -1,10 +1,11 @@
 import api from "../config/api";
 
 const AdminController = {
-
   async listarCargos() {
     try {
-      const response = await api.get("/api/CargoApiController.php?action=listar");
+      const response = await api.get(
+        "/api/CargoApiController.php?action=listar"
+      );
       return response.data;
     } catch {
       return { success: false, error: "Erro ao listar cargos" };
@@ -24,15 +25,66 @@ const AdminController = {
     }
   },
 
-  // -------------------------------
-  // CATEGORIAS
-  // -------------------------------
+  async editarCargo(id, nome) {
+    try {
+      const response = await api.post(
+        "/api/CargoApiController.php?action=update",
+        JSON.stringify({ id, nome }),
+        { headers: { "Content-Type": "application/json" } }
+      );
+      return response.data;
+    } catch {
+      return { success: false, error: "Erro ao editar cargo" };
+    }
+  },
+
   async listarCategorias() {
     try {
-      const response = await api.get("/api/CategoriaApiController.php?action=listar");
+      const response = await api.get(
+        "/api/CategoriaApiController.php?action=listar"
+      );
       return response.data;
     } catch {
       return { success: false, error: "Erro ao listar categorias" };
+    }
+  },
+
+  async editarCategoria(id, nome, icone) {
+    try {
+      const response = await api.post(
+        "/api/CategoriaApiController.php?action=update",
+        JSON.stringify({ id, nome, icone }),
+        { headers: { "Content-Type": "application/json" } }
+      );
+      return response.data;
+    } catch {
+      return { success: false, error: "Erro ao editar categoria" };
+    }
+  },
+
+  async excluirCategoria(id) {
+    try {
+      const response = await api.post(
+        "/api/CategoriaApiController.php?action=delete",
+        JSON.stringify({ id }),
+        { headers: { "Content-Type": "application/json" } }
+      );
+      return response.data;
+    } catch {
+      return { success: false, error: "Erro ao excluir categoria" };
+    }
+  },
+
+  async excluirCargo(id) {
+    try {
+      const response = await api.post(
+        "/api/CargoApiController.php?action=delete",
+        JSON.stringify({ id }),
+        { headers: { "Content-Type": "application/json" } }
+      );
+      return response.data;
+    } catch {
+      return { success: false, error: "Erro ao excluir cargo" };
     }
   },
 
@@ -49,28 +101,14 @@ const AdminController = {
     }
   },
 
-  // -------------------------------
-  // USUÁRIOS
-  // -------------------------------
   async listarUsuarios() {
     try {
-      const response = await api.get("/api/UsuarioApiController.php?action=listAllAdmin");
-      return response.data;
-    } catch {
-      return { success: false, error: "Erro ao listar usuários" };
-    }
-  },
-
-  async alterarTipoUsuario(id, tipo) {
-    try {
-      const response = await api.post(
-        "/api/UsuarioApiController.php?action=alterarTipo",
-        JSON.stringify({ id, tipo }),
-        { headers: { "Content-Type": "application/json" } }
+      const response = await api.get(
+        "/api/UsuarioApiController.php?action=listAllAdmin"
       );
       return response.data;
     } catch {
-      return { success: false, error: "Erro ao alterar tipo do usuário" };
+      return { success: false, error: "Erro ao listar usuários" };
     }
   },
 
@@ -87,12 +125,11 @@ const AdminController = {
     }
   },
 
-  // -------------------------------
-  // VAGAS
-  // -------------------------------
   async listarVagasAdmin() {
     try {
-      const response = await api.get("/api/VagaApiController.php?action=listarAdmin");
+      const response = await api.get(
+        "/api/VagaApiController.php?action=listarAdmin"
+      );
       return response.data;
     } catch {
       return { success: false, error: "Erro ao listar vagas" };
@@ -112,28 +149,14 @@ const AdminController = {
     }
   },
 
-  // -------------------------------
-  // CANDIDATURAS
-  // -------------------------------
   async listarCandidaturasAdmin() {
     try {
-      const response = await api.get("/api/CandidaturaApiController.php?action=listarAdmin");
-      return response.data;
-    } catch {
-      return { success: false, error: "Erro ao listar candidaturas" };
-    }
-  },
-
-  async alterarStatusCandidatura(id, status) {
-    try {
-      const response = await api.post(
-        "/api/CandidaturaApiController.php?action=alterarStatus",
-        JSON.stringify({ id, status }),
-        { headers: { "Content-Type": "application/json" } }
+      const response = await api.get(
+        "/api/CandidaturaApiController.php?action=listarAdmin"
       );
       return response.data;
     } catch {
-      return { success: false, error: "Erro ao alterar status da candidatura" };
+      return { success: false, error: "Erro ao listar candidaturas" };
     }
   },
 };

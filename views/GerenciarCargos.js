@@ -34,27 +34,23 @@ export default function GerenciarCargos({ navigation }) {
   };
 
   const excluirCargo = (id) => {
-    Alert.alert(
-      "Excluir Cargo",
-      "Deseja realmente excluir este cargo?",
-      [
-        { text: "Cancelar", style: "cancel" },
-        {
-          text: "Excluir",
-          style: "destructive",
-          onPress: async () => {
-            const result = await AdminController.excluirCargo(id);
+    Alert.alert("Excluir Cargo", "Deseja realmente excluir este cargo?", [
+      { text: "Cancelar", style: "cancel" },
+      {
+        text: "Excluir",
+        style: "destructive",
+        onPress: async () => {
+          const result = await AdminController.excluirCargo(id);
 
-            if (result.success) {
-              Alert.alert("Sucesso", result.message);
-              carregarCargos();
-            } else {
-              Alert.alert("Erro", result.error || "Falha ao excluir.");
-            }
-          },
+          if (result.success) {
+            Alert.alert("Sucesso", result.message);
+            carregarCargos();
+          } else {
+            Alert.alert("Erro", result.error || "Falha ao excluir.");
+          }
         },
-      ]
-    );
+      },
+    ]);
   };
 
   if (loading) {
@@ -71,11 +67,11 @@ export default function GerenciarCargos({ navigation }) {
       <Text style={styles.titulo}>Lista de Cargos</Text>
 
       <TouchableOpacity
-        style={styles.botaoInserir}
-        onPress={() => navigation.navigate("AdminCadastrarCargo")}
+        style={[styles.acaoBotao, { backgroundColor: "#16a34a" }]}
+        onPress={() => navigation.navigate("AdminCadastrarCargos")}
       >
         <Ionicons name="add-circle" size={20} color="#fff" />
-        <Text style={styles.textoInserir}>Inserir</Text>
+        <Text style={styles.acaoTexto}>Novo Cargo</Text>
       </TouchableOpacity>
 
       {/* Cabeçalho tabela */}
