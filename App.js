@@ -4,7 +4,6 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Home from "./views/Home";
 import Login from "./views/Login";
-import Cadastro from "./views/Cadastro";
 import FormCadastro from "./views/FormCadastro";
 import FormVagas from "./views/FormVagas";
 import VagasList from "./views/VagasList";
@@ -62,11 +61,6 @@ export default function App() {
         <Stack.Screen
           name="Login"
           component={Login}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Cadastro"
-          component={Cadastro}
           options={{ headerShown: false }}
         />
         <Stack.Screen

@@ -59,7 +59,7 @@ export default function Cadastrar({ navigation }) {
       console.log("Erro ao buscar cidades:", error);
     }
   }
-  // Log global para capturar exceções silenciosas
+ 
   global.ErrorUtils.setGlobalHandler((err, isFatal) => {
     console.warn('🚨 [Global Error Handler] Erro detectado:', err.message);
     if (isFatal) {
@@ -69,16 +69,14 @@ export default function Cadastrar({ navigation }) {
 
   useEffect(() => {
     isMounted.current = true;
-    console.log('🟢 FormCadastro montado.');
+  
 
     const loadData = async () => {
       try {
-        console.log('📡 Carregando dados iniciais...');
         const data = await CadastroController.create();
         if (isMounted.current && data.success) {
           setEstados(data.estados || []);
           setPapeis(data.papeis || []);
-          console.log('✅ Dados iniciais carregados com sucesso.');
         } else if (isMounted.current) {
           console.warn('⚠️ Dados não retornaram sucesso:', data);
           Alert.alert('Erro', 'Não foi possível carregar dados do cadastro');
@@ -94,20 +92,17 @@ export default function Cadastrar({ navigation }) {
     loadData();
 
     return () => {
-      console.log('🔴 FormCadastro desmontado.');
       isMounted.current = false;
     };
   }, []);
 
   const handleChange = async (field, value) => {
-    console.log(`✏️ Campo alterado: ${field} = ${value}`);
 
     setFormData(prev => ({ ...prev, [field]: value }));
 
   };
 
   const handleRegister = async () => {
-    console.log('📝 Iniciando processo de cadastro...');
     if (!formData.nome || !formData.email || !formData.senha || !formData.conf_senha) {
       Alert.alert('Erro', 'Preencha os campos obrigatórios');
       return;
@@ -119,9 +114,7 @@ export default function Cadastrar({ navigation }) {
     }
 
     try {
-      console.log('📤 Enviando dados de cadastro:', formData);
       const result = await CadastroController.register(formData);
-      console.log('📥 Resposta do servidor:', result);
 
       if (!result.success) {
         Alert.alert('Erro', result.errors ? result.errors[0] : 'Erro ao cadastrar usuário');
@@ -131,7 +124,6 @@ export default function Cadastrar({ navigation }) {
       Alert.alert('Sucesso', 'Cadastro realizado com sucesso!');
 
       try {
-        console.log('🔐 Tentando login automático...');
         const loginResult = await LoginController.login(formData.email, formData.senha);
         console.log('📥 Resultado do login automático:', loginResult);
 
@@ -144,7 +136,7 @@ export default function Cadastrar({ navigation }) {
             navigation.replace('UsuarioComum');
           } else if (tipo === 3) {
             navigation.replace('Empresa');
-          } else {
+          }  else {
             navigation.replace('Home');
           }
         } else {
@@ -289,7 +281,7 @@ export default function Cadastrar({ navigation }) {
                       borderRadius: 8,
                       maxHeight: 180,
                       zIndex: 10,
-                      elevation: 10, // Android sombra
+                      elevation: 10, 
                     }}
                   >
                     <ScrollView nestedScrollEnabled>
