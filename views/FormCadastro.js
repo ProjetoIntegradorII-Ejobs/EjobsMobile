@@ -1,16 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { 
-  Text, 
-  View, 
-  KeyboardAvoidingView, 
-  TextInput, 
-  TouchableOpacity, 
+import {
+  Text,
+  View,
+  KeyboardAvoidingView,
+  TextInput,
+  TouchableOpacity,
   ScrollView,
-  SafeAreaView,
   Platform,
   Alert,
-  FlatList
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { cadastroStyles } from '../assets/css/CadastroStyles';
 import CadastroController from '../controllers/CadastroController';
 import { Picker } from '@react-native-picker/picker';
@@ -37,31 +36,30 @@ export default function Cadastrar({ navigation }) {
   });
 
   const [estados, setEstados] = useState([]);
-  const [cidades, setCidades] = useState([]);
   const [papeis, setPapeis] = useState([]);
-  const [termo, setTermo] = useState("");
+
+  const [termo, setTermo] = useState('');
   const [lista, setLista] = useState([]);
   const [showList, setShowList] = useState(false);
 
   const buscarCidades = async (nomeCidade) => {
     if (nomeCidade.length < 2) {
       setLista([]);
+      setShowList(false);
       return;
     }
 
-   try {
+    try {
       const response = await CadastroController.carregaCidades(nomeCidade);
-
       setLista(response);
       setShowList(true);
-
     } catch (error) {
-      console.log("Erro ao buscar cidades:", error);
+      console.log('Erro ao buscar cidades:', error);
     }
-  }
- 
+  };
+
   global.ErrorUtils.setGlobalHandler((err, isFatal) => {
-    console.warn('🚨 [Global Error Handler] Erro detectado:', err.message);
+    console.warn('🚨 Erro detectado:', err.message);
     if (isFatal) {
       Alert.alert('Erro Fatal', 'O app encontrou um erro e será reiniciado.');
     }
@@ -69,22 +67,21 @@ export default function Cadastrar({ navigation }) {
 
   useEffect(() => {
     isMounted.current = true;
-  
 
     const loadData = async () => {
       try {
         const data = await CadastroController.create();
+
         if (isMounted.current && data.success) {
           setEstados(data.estados || []);
           setPapeis(data.papeis || []);
         } else if (isMounted.current) {
-          console.warn('⚠️ Dados não retornaram sucesso:', data);
-          Alert.alert('Erro', 'Não foi possível carregar dados do cadastro');
+          Alert.alert('Erro', 'Erro ao carregar dados iniciais.');
         }
       } catch (err) {
         console.error('❌ Erro ao carregar dados iniciais:', err);
         if (isMounted.current) {
-          Alert.alert('Erro', 'Não foi possível conectar ao servidor');
+          Alert.alert('Erro', 'Falha ao conectar ao servidor.');
         }
       }
     };
@@ -96,74 +93,67 @@ export default function Cadastrar({ navigation }) {
     };
   }, []);
 
-  const handleChange = async (field, value) => {
-
-    setFormData(prev => ({ ...prev, [field]: value }));
-
+  const handleChange = (field, value) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleRegister = async () => {
-    if (!formData.nome || !formData.email || !formData.senha || !formData.conf_senha) {
-      Alert.alert('Erro', 'Preencha os campos obrigatórios');
-      return;
+    if (!formData.nome || !formData.email || !formData.senha) {
+      return Alert.alert('Erro', 'Preencha os campos obrigatórios.');
     }
 
     if (formData.senha !== formData.conf_senha) {
-      Alert.alert('Erro', 'As senhas não conferem');
-      return;
+      return Alert.alert('Erro', 'As senhas não conferem.');
     }
 
     try {
       const result = await CadastroController.register(formData);
 
       if (!result.success) {
-        Alert.alert('Erro', result.errors ? result.errors[0] : 'Erro ao cadastrar usuário');
-        return;
+        return Alert.alert(
+          'Erro',
+          result.errors ? result.errors[0] : 'Erro ao cadastrar.'
+        );
       }
 
-      Alert.alert('Sucesso', 'Cadastro realizado com sucesso!');
+      Alert.alert('Sucesso', 'Cadastro realizado!');
 
-      try {
-        const loginResult = await LoginController.login(formData.email, formData.senha);
-        console.log('📥 Resultado do login automático:', loginResult);
+      const loginResult = await LoginController.login(
+        formData.email,
+        formData.senha
+      );
 
-        if (loginResult.success && loginResult.usuario) {
-          await AsyncStorage.setItem('usuarioLogado', JSON.stringify(loginResult.usuario));
-          console.log('✅ Usuário logado automaticamente:', loginResult.usuario);
+      if (loginResult.success && loginResult.usuario) {
+        await AsyncStorage.setItem(
+          'usuarioLogado',
+          JSON.stringify(loginResult.usuario)
+        );
 
-          const tipo = loginResult.usuario.tipo;
-          if (tipo === 1) {
-            navigation.replace('UsuarioComum');
-          } else if (tipo === 3) {
-            navigation.replace('Empresa');
-          }  else {
-            navigation.replace('Home');
-          }
-        } else {
-          Alert.alert('Erro', 'Não foi possível realizar login automático.');
-          navigation.replace('Login');
-        }
-      } catch (err) {
-        console.error('❌ Erro no login automático:', err);
-        Alert.alert('Erro', 'Falha ao realizar login automático.');
+        const tipo = loginResult.usuario.tipo;
+        navigation.replace(tipo === 3 ? 'Empresa' : 'UsuarioComum');
+      } else {
+        Alert.alert('Erro', 'Falha no login automático.');
         navigation.replace('Login');
       }
     } catch (error) {
-      console.error('❌ Erro geral no cadastro:', error);
-      Alert.alert('Erro', 'Não foi possível conectar ao servidor.');
+      console.error('❌ Erro no cadastro:', error);
+      Alert.alert('Erro', 'Falha ao conectar ao servidor.');
     }
   };
 
   return (
     <SafeAreaView style={cadastroStyles.container}>
-      <KeyboardAvoidingView 
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={{ flex: 1 }}
       >
-        <ScrollView 
-          contentContainerStyle={cadastroStyles.scrollContent}
-          showsVerticalScrollIndicator={false}
+        <ScrollView
+          contentContainerStyle={[
+            cadastroStyles.scrollContent,
+            { paddingBottom: 60 },
+          ]}
           keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
         >
           <View style={cadastroStyles.header}>
             <Text style={cadastroStyles.title}>Cadastro de Usuário</Text>
@@ -172,7 +162,7 @@ export default function Cadastrar({ navigation }) {
           <View style={cadastroStyles.formContainer}>
             <Text style={cadastroStyles.sectionTitle}>Preencha os dados abaixo</Text>
 
-            {/* Papel */}
+       
             <View style={cadastroStyles.inputGroup}>
               <Text style={cadastroStyles.label}>
                 Papel<Text style={cadastroStyles.requiredIndicator}> *</Text>
@@ -183,7 +173,7 @@ export default function Cadastrar({ navigation }) {
                   onValueChange={(value) => handleChange('tipoUsuario', value)}
                   style={cadastroStyles.picker}
                 >
-                  <Picker.Item label="Selecione o papel" value="" />
+                  <Picker.Item label="Selecione" value="" />
                   {papeis.map((papel) => (
                     <Picker.Item key={papel.id} label={papel.nome} value={papel.id.toString()} />
                   ))}
@@ -191,27 +181,31 @@ export default function Cadastrar({ navigation }) {
               </View>
             </View>
 
-            {/* Campos de texto */}
+            {/* NOME */}
             <View style={cadastroStyles.inputGroup}>
               <Text style={cadastroStyles.label}>Nome</Text>
               <TextInput
                 style={cadastroStyles.input}
-                placeholder="Informe o nome"
+                placeholder="Informe seu nome"
                 value={formData.nome}
-                onChangeText={text => handleChange('nome', text)}
+                onChangeText={(txt) => handleChange('nome', txt)}
               />
             </View>
 
+            {/* EMAIL */}
             <View style={cadastroStyles.inputGroup}>
               <Text style={cadastroStyles.label}>Email</Text>
               <TextInput
                 style={cadastroStyles.input}
-                placeholder="Informe o email"
+                placeholder="Informe seu email"
+                keyboardType="email-address"
+                autoCapitalize="none"
                 value={formData.email}
-                onChangeText={text => handleChange('email', text)}
+                onChangeText={(txt) => handleChange('email', txt)}
               />
             </View>
 
+            {/* SENHA */}
             <View style={cadastroStyles.inputGroup}>
               <Text style={cadastroStyles.label}>Senha</Text>
               <TextInput
@@ -219,48 +213,53 @@ export default function Cadastrar({ navigation }) {
                 placeholder="Informe a senha"
                 secureTextEntry
                 value={formData.senha}
-                onChangeText={text => handleChange('senha', text)}
+                onChangeText={(txt) => handleChange('senha', txt)}
               />
             </View>
 
+            {/* CONFIRMAR SENHA */}
             <View style={cadastroStyles.inputGroup}>
-              <Text style={cadastroStyles.label}>Confirmar Senha</Text>
+              <Text style={cadastroStyles.label}>Confirmar senha</Text>
               <TextInput
                 style={cadastroStyles.input}
-                placeholder="Confirme a senha"
                 secureTextEntry
+                placeholder="Confirme a senha"
                 value={formData.conf_senha}
-                onChangeText={text => handleChange('conf_senha', text)}
+                onChangeText={(txt) => handleChange('conf_senha', txt)}
               />
             </View>
 
+            {/* DOCUMENTO */}
             <View style={cadastroStyles.inputGroup}>
               <Text style={cadastroStyles.label}>Documento</Text>
               <TextInput
                 style={cadastroStyles.input}
-                placeholder="Informe CPF ou CNPJ"
+                placeholder="CPF ou CNPJ"
                 value={formData.documento}
-                onChangeText={text => handleChange('documento', text)}
+                onChangeText={(txt) => handleChange('documento', txt)}
               />
             </View>
 
+            {/* TELEFONE */}
             <View style={cadastroStyles.inputGroup}>
               <Text style={cadastroStyles.label}>Telefone</Text>
               <TextInput
                 style={cadastroStyles.input}
-                placeholder="Informe o telefone"
+                placeholder="DDD + número"
+                keyboardType="phone-pad"
                 value={formData.telefone}
-                onChangeText={text => handleChange('telefone', text)}
+                onChangeText={(txt) => handleChange('telefone', txt)}
               />
             </View>
 
-           <View style={cadastroStyles.inputGroup}>
+            {/* CIDADE (autocomplete) */}
+            <View style={cadastroStyles.inputGroup}>
               <Text style={cadastroStyles.label}>Cidade</Text>
 
-              <View style={{ position: "relative" }}>
+              <View style={{ position: 'relative' }}>
                 <TextInput
                   style={cadastroStyles.input}
-                  placeholder="Digite o nome da cidade"
+                  placeholder="Digite a cidade"
                   value={termo}
                   onChangeText={(texto) => {
                     setTermo(texto);
@@ -271,17 +270,17 @@ export default function Cadastrar({ navigation }) {
                 {showList && lista.length > 0 && (
                   <View
                     style={{
-                      position: "absolute",
+                      position: 'absolute',
                       top: 55,
                       left: 0,
                       right: 0,
-                      backgroundColor: "#fff",
+                      backgroundColor: '#fff',
                       borderWidth: 1,
-                      borderColor: "#ccc",
+                      borderColor: '#ccc',
                       borderRadius: 8,
                       maxHeight: 180,
-                      zIndex: 10,
-                      elevation: 10, 
+                      zIndex: 100,
+                      elevation: 10,
                     }}
                   >
                     <ScrollView nestedScrollEnabled>
@@ -291,10 +290,10 @@ export default function Cadastrar({ navigation }) {
                           style={{ padding: 12 }}
                           onPress={() => {
                             setTermo(`${item.nome} - ${item.uf}`);
-                            setFormData(prev => ({
+                            setFormData((prev) => ({
                               ...prev,
                               cidade: item.id,
-                              estado: item.codigo_uf
+                              estado: item.codigo_uf,
                             }));
                             setShowList(false);
                           }}
@@ -308,14 +307,14 @@ export default function Cadastrar({ navigation }) {
               </View>
             </View>
 
-
+            {/* ENDEREÇO */}
             <View style={cadastroStyles.inputGroup}>
               <Text style={cadastroStyles.label}>Logradouro</Text>
               <TextInput
                 style={cadastroStyles.input}
-                placeholder="Rua, Avenida..."
+                placeholder="Rua / Avenida"
                 value={formData.endLogradouro}
-                onChangeText={text => handleChange('endLogradouro', text)}
+                onChangeText={(txt) => handleChange('endLogradouro', txt)}
               />
             </View>
 
@@ -323,9 +322,9 @@ export default function Cadastrar({ navigation }) {
               <Text style={cadastroStyles.label}>Bairro</Text>
               <TextInput
                 style={cadastroStyles.input}
-                placeholder="Informe o bairro"
+                placeholder="Bairro"
                 value={formData.endBairro}
-                onChangeText={text => handleChange('endBairro', text)}
+                onChangeText={(txt) => handleChange('endBairro', txt)}
               />
             </View>
 
@@ -333,40 +332,46 @@ export default function Cadastrar({ navigation }) {
               <Text style={cadastroStyles.label}>Número</Text>
               <TextInput
                 style={cadastroStyles.input}
-                placeholder="Informe o número"
+                placeholder="Número"
+                keyboardType="numeric"
                 value={formData.endNumero}
-                onChangeText={text => handleChange('endNumero', text)}
+                onChangeText={(txt) => handleChange('endNumero', txt)}
               />
             </View>
 
+            {/* DESCRIÇÃO */}
             <View style={cadastroStyles.inputGroup}>
               <Text style={cadastroStyles.label}>Descrição</Text>
               <TextInput
-                style={cadastroStyles.input}
-                placeholder="Descrição opcional"
+                style={[cadastroStyles.input, { height: 70 }]}
+                placeholder="Descrição "
+                multiline
                 value={formData.descricao}
-                onChangeText={text => handleChange('descricao', text)}
+                onChangeText={(txt) => handleChange('descricao', txt)}
               />
             </View>
 
-            <TouchableOpacity 
-              style={[cadastroStyles.button, cadastroStyles.saveButton]} 
+            {/* BOTÃO */}
+            <TouchableOpacity
+              style={[cadastroStyles.button, cadastroStyles.saveButton]}
               onPress={handleRegister}
             >
               <Text style={cadastroStyles.buttonText}>Cadastrar</Text>
             </TouchableOpacity>
 
+            {/* Login */}
             <View style={{ marginTop: 16, alignItems: 'center' }}>
               <Text>
                 Já tem conta?{' '}
-                <Text 
-                  style={{ color: '#2563eb', fontWeight: '700' }} 
+                <Text
+                  style={{ color: '#2563eb', fontWeight: 'bold' }}
                   onPress={() => navigation.navigate('Login')}
                 >
                   Faça login
                 </Text>
               </Text>
             </View>
+
           </View>
         </ScrollView>
       </KeyboardAvoidingView>

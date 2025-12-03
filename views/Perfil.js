@@ -4,10 +4,13 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  SafeAreaView,
   Alert,
   StyleSheet,
+  KeyboardAvoidingView,
+  ScrollView,
+  Platform,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context"; // ✅ SAFE AREA REAL
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import UsuarioController from "../controllers/UsuarioController";
 
@@ -59,19 +62,15 @@ export default function Perfil({ navigation }) {
       telefone: form.telefone,
       documento: form.documento,
       descricao: form.descricao,
-      // email NÃO é enviado
     };
 
     try {
       const result = await UsuarioController.update(dadosAtualizados);
 
       if (!result.success) {
-        Alert.alert("Erro", result.errors?.[0] || "Falha ao atualizar usuário.");
+        Alert.alert("Erro", result.errors?.[0] || "Falha ao atualizar.");
       } else {
-        const novoUsuario = {
-          ...usuario,
-          ...dadosAtualizados,
-        };
+        const novoUsuario = { ...usuario, ...dadosAtualizados };
 
         await AsyncStorage.setItem("usuarioLogado", JSON.stringify(novoUsuario));
         setUsuario(novoUsuario);
@@ -79,8 +78,8 @@ export default function Perfil({ navigation }) {
         Alert.alert("Sucesso", "Dados atualizados com sucesso!");
       }
     } catch (error) {
-      console.error(error);
       Alert.alert("Erro", "Falha na comunicação com o servidor.");
+      console.error(error);
     } finally {
       setSalvando(false);
     }
@@ -95,68 +94,80 @@ export default function Perfil({ navigation }) {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Editar Perfil</Text>
-
-      {/* Email bloqueado */}
-      <TextInput
-        style={[styles.input, styles.disabledInput]}
-        placeholder="Email"
-        value={email}
-        editable={false}
-      />
-
-      <TextInput
-        style={styles.input}
-        placeholder="Nome"
-        value={form.nome}
-        onChangeText={(v) => handleChange("nome", v)}
-      />
-
-      <TextInput
-        style={styles.input}
-        placeholder="Telefone"
-        keyboardType="phone-pad"
-        value={form.telefone}
-        onChangeText={(v) => handleChange("telefone", v)}
-      />
-
-      <TextInput
-        style={styles.input}
-        placeholder="Documento"
-        keyboardType="numeric"
-        value={form.documento}
-        onChangeText={(v) => handleChange("documento", v)}
-      />
-
-      {/* Campo de descrição */}
-      <TextInput
-        style={[styles.input, styles.textArea]}
-        placeholder="Descrição"
-        value={form.descricao}
-        onChangeText={(v) => handleChange("descricao", v)}
-        multiline
-        numberOfLines={4}
-      />
-
-      <TouchableOpacity
-        style={[styles.button, salvando && { opacity: 0.5 }]}
-        onPress={handleSalvar}
-        disabled={salvando}
+    <SafeAreaView style={styles.safeArea}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
-        <Text style={styles.buttonText}>
-          {salvando ? "Salvando..." : "Salvar Alterações"}
-        </Text>
-      </TouchableOpacity>
+        <ScrollView
+          style={styles.container}
+          contentContainerStyle={{ paddingBottom: 50 }} // ⭐ evita sumir atrás do teclado
+          showsVerticalScrollIndicator={false}
+        >
+          <Text style={styles.title}>Editar Perfil</Text>
 
-      <TouchableOpacity onPress={() => navigation.goBack()}>
-        <Text style={styles.backText}>Voltar</Text>
-      </TouchableOpacity>
+          {/* EMAIL BLOQUEADO */}
+          <TextInput
+            style={[styles.input, styles.disabledInput]}
+            placeholder="Email"
+            value={email}
+            editable={false}
+          />
+
+          <TextInput
+            style={styles.input}
+            placeholder="Nome"
+            value={form.nome}
+            onChangeText={(v) => handleChange("nome", v)}
+          />
+
+          <TextInput
+            style={styles.input}
+            placeholder="Telefone"
+            keyboardType="phone-pad"
+            value={form.telefone}
+            onChangeText={(v) => handleChange("telefone", v)}
+          />
+
+          <TextInput
+            style={styles.input}
+            placeholder="Documento (CPF/CNPJ)"
+            keyboardType="numeric"
+            value={form.documento}
+            onChangeText={(v) => handleChange("documento", v)}
+          />
+
+          <TextInput
+            style={[styles.input, styles.textArea]}
+            placeholder="Descrição (opcional)"
+            value={form.descricao}
+            onChangeText={(v) => handleChange("descricao", v)}
+            multiline
+            numberOfLines={4}
+          />
+
+          <TouchableOpacity
+            style={[styles.button, salvando && { opacity: 0.5 }]}
+            onPress={handleSalvar}
+            disabled={salvando}
+          >
+            <Text style={styles.buttonText}>
+              {salvando ? "Salvando..." : "Salvar Alterações"}
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Text style={styles.backText}>Voltar</Text>
+          </TouchableOpacity>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: { flex: 1, backgroundColor: "#fff" },
+
   container: { flex: 1, padding: 20, backgroundColor: "#fff" },
 
   center: { flex: 1, justifyContent: "center", alignItems: "center" },

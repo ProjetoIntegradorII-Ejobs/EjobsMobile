@@ -4,10 +4,11 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  ActivityIndicator,
+  ActivityIndicator,  
   ScrollView,
   Alert,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context"; 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
@@ -67,104 +68,112 @@ export default function Empresa({ navigation }) {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#fff" }}>
-    <ScrollView style={styles.container}>
-      {/* HEADER */}
-      <View style={styles.headerRow}>
-        <View>
-          <Text style={styles.bemvindo}>
-            {empresa?.nome || "Empresa"}
-          </Text>
-          <Text style={styles.subLabel}>Painel da Empresa</Text>
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={{ paddingBottom: 90 }} // 🌟 EVITA NAVBAR COBRIR CONTEÚDO
+      >
+        {/* HEADER */}
+        <View style={styles.headerRow}>
+          <View>
+            <Text style={styles.bemvindo}>
+              {empresa?.nome || "Empresa"}
+            </Text>
+            <Text style={styles.subLabel}>Painel da Empresa</Text>
+          </View>
+
+          <TouchableOpacity onPress={handleLogout} style={styles.logoutBtn}>
+            <Ionicons name="log-out-outline" size={24} color="#ef4444" />
+          </TouchableOpacity>
         </View>
 
-        <TouchableOpacity onPress={handleLogout} style={styles.logoutBtn}>
-          <Ionicons name="log-out-outline" size={24} color="#ef4444" />
-        </TouchableOpacity>
-      </View>
-
-      {/* DASHBOARD */}
-      <View style={styles.dashboardRow}>
-        <View style={styles.dashboardCard}>
-          <Ionicons name="briefcase-outline" size={32} color="#2563eb" />
-          <Text style={styles.cardNumero}>{vagas.length}</Text>
-          <Text style={styles.cardTexto}>Vagas criadas</Text>
+      
+        <View style={styles.dashboardRow}>
+          <View style={styles.dashboardCard}>
+            <Ionicons name="briefcase-outline" size={32} color="#2563eb" />
+            <Text style={styles.cardNumero}>{vagas.length}</Text>
+            <Text style={styles.cardTexto}>Vagas criadas</Text>
+          </View>
         </View>
 
-      </View>
+        {/* MENU */}
+        <View style={styles.actions}>
+          <TouchableOpacity
+            style={styles.menuButton}
+            onPress={() => navigation.navigate("VagasAtivas")}
+          >
+            <Ionicons name="list-outline" size={28} color="#2563eb" />
+            <View>
+              <Text style={styles.menuTitle}>Gerenciar Vagas</Text>
+              <Text style={styles.menuDesc}>
+                Editar, ativar e acompanhar candidatos
+              </Text>
+            </View>
+          </TouchableOpacity>
 
-      {/* MENU */}
-      <View style={styles.actions}>
-        <TouchableOpacity
-          style={styles.menuButton}
-          onPress={() => navigation.navigate("VagasAtivas")}
-        >
-          <Ionicons name="list-outline" size={28} color="#2563eb" />
-          <View>
-            <Text style={styles.menuTitle}>Gerenciar Vagas</Text>
-            <Text style={styles.menuDesc}>
-              Editar, ativar e acompanhar candidatos
-            </Text>
-          </View>
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.menuButton}
+            onPress={() => navigation.navigate("FormVagas")}
+          >
+            <Ionicons name="add-circle-outline" size={28} color="#16a34a" />
+            <View>
+              <Text style={[styles.menuTitle, { color: "#16a34a" }]}>
+                Criar Nova Vaga
+              </Text>
+              <Text style={styles.menuDesc}>
+                Publique oportunidades para candidatos
+              </Text>
+            </View>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.menuButton}
-          onPress={() => navigation.navigate("FormVagas")}
-        >
-          <Ionicons name="add-circle-outline" size={28} color="#16a34a" />
-          <View>
-            <Text style={[styles.menuTitle, { color: "#16a34a" }]}>
-              Criar Nova Vaga
-            </Text>
-            <Text style={styles.menuDesc}>
-              Publique oportunidades para candidatos
-            </Text>
-          </View>
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.menuButton}
+            onPress={() => navigation.navigate("EmpresaEditar")}
+          >
+            <Ionicons name="settings-outline" size={28} color="#2563eb" />
+            <View>
+              <Text style={styles.menuTitle}>Editar Perfil</Text>
+              <Text style={styles.menuDesc}>
+                Atualize suas informações e dados
+              </Text>
+            </View>
+          </TouchableOpacity>
+        </View>
 
-        <TouchableOpacity
-          style={styles.menuButton}
-          onPress={() => navigation.navigate("EmpresaEditar")}
-        >
-          <Ionicons name="settings-outline" size={28} color="#2563eb" />
-          <View>
-            <Text style={styles.menuTitle}>Editar Perfil</Text>
-            <Text style={styles.menuDesc}>
-              Atualize suas informações e dados
-            </Text>
-          </View>
-        </TouchableOpacity>
-      </View>
+        {/* LISTA DE VAGAS */}
+        <Text style={styles.sectionTitle}>Últimas Vagas</Text>
 
-      {/* LISTAGEM DE VAGAS */}
-      <Text style={styles.sectionTitle}>Últimas Vagas</Text>
+        {vagas.length === 0 ? (
+          <Text style={{ color: "#6b7280" }}>Nenhuma vaga cadastrada ainda.</Text>
+        ) : (
+          vagas.map((vaga) => (
+            <View key={vaga.id} style={styles.vagaCard}>
+              <Text style={styles.vagaTitulo}>{vaga.titulo}</Text>
+              <Text style={styles.vagaInfo}>
+                <Ionicons name="cash-outline" size={14} color="#2563eb" /> R${" "}
+                {vaga.salario}
+              </Text>
+              <Text style={styles.vagaInfo}>
+                <Ionicons name="time-outline" size={14} color="#2563eb" />{" "}
+                {vaga.horario}
+              </Text>
+            </View>
+          ))
+        )}
+      </ScrollView>
 
-      {vagas.length === 0 ? (
-        <Text style={{ color: "#6b7280" }}>Nenhuma vaga cadastrada ainda.</Text>
-      ) : (
-        vagas.map((vaga) => (
-          <View key={vaga.id} style={styles.vagaCard}>
-            <Text style={styles.vagaTitulo}>{vaga.titulo}</Text>
-            <Text style={styles.vagaInfo}>
-              <Ionicons name="cash-outline" size={14} color="#2563eb" /> R${" "}
-              {vaga.salario}
-            </Text>
-            <Text style={styles.vagaInfo}>
-              <Ionicons name="time-outline" size={14} color="#2563eb" />{" "}
-              {vaga.horario}
-            </Text>
-          </View>
-        ))
-      )}
-    </ScrollView>
-    <Navbar navigation={navigation} />
-    </View>
+      {/* NAVBAR COM SAFE AREA */}
+      <SafeAreaView edges={["bottom"]} style={{ backgroundColor: "#2563eb" }}>
+        <Navbar navigation={navigation} />
+      </SafeAreaView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff", padding: 16 },
+  safeArea: { flex: 1, backgroundColor: "#fff" },
+
+  container: { flex: 1, padding: 16 },
 
   center: { flex: 1, justifyContent: "center", alignItems: "center" },
 
@@ -172,7 +181,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginTop: 10,
   },
 
   bemvindo: {
