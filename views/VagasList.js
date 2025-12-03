@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   TextInput,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context"; 
 import VagasController from "../controllers/VagasController";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -62,71 +63,76 @@ export default function VagasList({ navigation }) {
   }
 
   return (
-    <View style={styles.container}>
-      {/* Barra de busca estilizada */}
-      <View style={styles.searchBox}>
-        <Ionicons name="search-outline" size={20} color="#6b7280" />
-        <TextInput
-          placeholder="Buscar vagas por título ou descrição..."
-          value={busca}
-          onChangeText={pesquisar}
-          style={styles.inputBusca}
-        />
-      </View>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        <View style={styles.searchBox}>
+          <Ionicons name="search-outline" size={20} color="#6b7280" />
+          <TextInput
+            placeholder="Buscar vagas por título ou descrição..."
+            value={busca}
+            onChangeText={pesquisar}
+            style={styles.inputBusca}
+          />
+        </View>
 
-      {carregandoBusca && (
-        <ActivityIndicator size="small" color="#2563eb" />
-      )}
+        {carregandoBusca && (
+          <ActivityIndicator size="small" color="#2563eb" />
+        )}
 
-      {/* Lista de vagas */}
-      {vagas.length === 0 ? (
-        <Text style={styles.semVagas}>Nenhuma vaga encontrada.</Text>
-      ) : (
-        <FlatList
-          data={vagas}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              style={styles.card}
-              onPress={() =>
-                navigation.navigate("VagaDetalhes", { id: item.id })
-              }
-            >
-              <View style={styles.cardHeader}>
-                <Text style={styles.titulo}>{item.titulo}</Text>
-                <Ionicons
-                  name="arrow-forward-circle-outline"
-                  size={22}
-                  color="#2563eb"
-                />
-              </View>
+        {/* Lista */}
+        {vagas.length === 0 ? (
+          <Text style={styles.semVagas}>Nenhuma vaga encontrada.</Text>
+        ) : (
+          <FlatList
+            data={vagas}
+            keyExtractor={(item) => item.id.toString()}
+            contentContainerStyle={{ paddingBottom: 80 }} 
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                style={styles.card}
+                onPress={() =>
+                  navigation.navigate("VagaDetalhes", { id: item.id })
+                }
+              >
+                <View style={styles.cardHeader}>
+                  <Text style={styles.titulo}>{item.titulo}</Text>
+                  <Ionicons
+                    name="arrow-forward-circle-outline"
+                    size={22}
+                    color="#2563eb"
+                  />
+                </View>
 
-              <Text style={styles.descricao} numberOfLines={2}>
-                {item.descricao}
-              </Text>
-
-              <View style={styles.infoRow}>
-                <Ionicons name="cash-outline" size={16} color="#2563eb" />
-                <Text style={styles.salario}>
-                  {item.salario ? `R$ ${item.salario}` : "A combinar"}
+                <Text style={styles.descricao} numberOfLines={2}>
+                  {item.descricao}
                 </Text>
-              </View>
-            </TouchableOpacity>
-          )}
-        />
-      )}
-    </View>
+
+                <View style={styles.infoRow}>
+                  <Ionicons name="cash-outline" size={16} color="#2563eb" />
+                  <Text style={styles.salario}>
+                    {item.salario ? `R$ ${item.salario}` : "A combinar"}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            )}
+          />
+        )}
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
-    padding: 14,
     backgroundColor: "#fff",
   },
 
-  /* 🔍 Barra de busca estilo profissional */
+  container: {
+    flex: 1,
+    padding: 14,
+  },
+
   searchBox: {
     flexDirection: "row",
     alignItems: "center",
@@ -145,7 +151,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
 
-  /* Cards */
   card: {
     backgroundColor: "#f9fafb",
     padding: 15,

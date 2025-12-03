@@ -8,6 +8,7 @@ import {
   Alert,
   ActivityIndicator,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context"; 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
 import VagasController from "../controllers/VagasController";
@@ -34,7 +35,6 @@ export default function VagaDetalhes({ route, navigation }) {
     carregar();
   }, [id]);
 
-  // 🔹 Verifica se o usuário já se candidatou
   useEffect(() => {
     async function verificarCandidatura() {
       const dados = await AsyncStorage.getItem("usuarioLogado");
@@ -75,75 +75,86 @@ export default function VagaDetalhes({ route, navigation }) {
   }
 
   return (
-    <ScrollView style={styles.container}>
-      {/* 🔹 Cabeçalho */}
-      <View style={styles.header}>
-        <Text style={styles.titulo}>{vaga.titulo}</Text>
-        <Text style={styles.empresa}>
-          <Ionicons name="business-outline" size={16} color="#2563eb" />{" "}
-          {vaga.empresa} — {vaga.cargo}
-        </Text>
-      </View>
-
-      {/* 🔹 Informações da vaga */}
-      <View style={styles.infoBox}>
-        <Text style={styles.info}>
-          <Ionicons name="briefcase-outline" size={16} color="#2563eb" />{" "}
-          Modalidade: {vaga.modalidade || "-"}
-        </Text>
-        <Text style={styles.info}>
-          <Ionicons name="cash-outline" size={16} color="#2563eb" /> Salário:{" "}
-          {vaga.salario ? `R$ ${vaga.salario}` : "A combinar"}
-        </Text>
-        <Text style={styles.info}>
-          <Ionicons name="document-text-outline" size={16} color="#2563eb" /> Regime:{" "}
-          {vaga.regime || "-"}
-        </Text>
-        <Text style={styles.info}>
-          <Ionicons name="time-outline" size={16} color="#2563eb" /> Horário:{" "}
-          {vaga.horario || "-"}
-        </Text>
-        <Text style={styles.info}>
-          <Ionicons name="ellipse-outline" size={16} color="#2563eb" /> Status:{" "}
-          {vaga.status || "Ativo"}
-        </Text>
-      </View>
-
-      {/* 🔹 Seções de texto */}
-      <Text style={styles.subtitulo}>Requisitos</Text>
-      <Text style={styles.texto}>{vaga.requisitos || "Não informados."}</Text>
-
-      <Text style={styles.subtitulo}>Descrição</Text>
-      <Text style={styles.texto}>{vaga.descricao || "Não informada."}</Text>
-
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          disabled={jaCandidatado}
-          style={[
-            styles.button,
-            jaCandidatado ? styles.buttonDisabled : styles.buttonActive,
-          ]}
-          onPress={handleCandidatar}
-        >
-          <Text style={styles.buttonText}>
-            {jaCandidatado
-              ? "Candidatura já realizada para esta vaga"
-              : "Candidatar-se"}
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView 
+        style={styles.container}
+        contentContainerStyle={{ paddingBottom: 40 }} // 🌟 EVITA NAVBAR COBRIR CONTEÚDO
+      >
+        {/* 🔹 Cabeçalho */}
+        <View style={styles.header}>
+          <Text style={styles.titulo}>{vaga.titulo}</Text>
+          <Text style={styles.empresa}>
+            <Ionicons name="business-outline" size={16} color="#2563eb" />{" "}
+            {vaga.empresa} — {vaga.cargo}
           </Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+        </View>
+
+        {/* 🔹 Informações da vaga */}
+        <View style={styles.infoBox}>
+          <Text style={styles.info}>
+            <Ionicons name="briefcase-outline" size={16} color="#2563eb" />{" "}
+            Modalidade: {vaga.modalidade || "-"}
+          </Text>
+          <Text style={styles.info}>
+            <Ionicons name="cash-outline" size={16} color="#2563eb" /> Salário:{" "}
+            {vaga.salario ? `R$ ${vaga.salario}` : "A combinar"}
+          </Text>
+          <Text style={styles.info}>
+            <Ionicons name="document-text-outline" size={16} color="#2563eb" />{" "}
+            Regime: {vaga.regime || "-"}
+          </Text>
+          <Text style={styles.info}>
+            <Ionicons name="time-outline" size={16} color="#2563eb" /> Horário:{" "}
+            {vaga.horario || "-"}
+          </Text>
+          <Text style={styles.info}>
+            <Ionicons name="ellipse-outline" size={16} color="#2563eb" /> Status:{" "}
+            {vaga.status || "Ativo"}
+          </Text>
+        </View>
+
+        {/* 🔹 Seções de texto */}
+        <Text style={styles.subtitulo}>Requisitos</Text>
+        <Text style={styles.texto}>{vaga.requisitos || "Não informados."}</Text>
+
+        <Text style={styles.subtitulo}>Descrição</Text>
+        <Text style={styles.texto}>{vaga.descricao || "Não informada."}</Text>
+
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            disabled={jaCandidatado}
+            style={[
+              styles.button,
+              jaCandidatado ? styles.buttonDisabled : styles.buttonActive,
+            ]}
+            onPress={handleCandidatar}
+          >
+            <Text style={styles.buttonText}>
+              {jaCandidatado
+                ? "Candidatura já realizada para esta vaga"
+                : "Candidatar-se"}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff", padding: 15 },
+  safeArea: { flex: 1, backgroundColor: "#fff" },
+
+  container: { flex: 1, padding: 15 },
   center: { flex: 1, justifyContent: "center", alignItems: "center" },
+
   header: { borderBottomWidth: 1, borderBottomColor: "#e5e7eb", marginBottom: 10 },
+
   titulo: { fontSize: 22, fontWeight: "bold", color: "#111827" },
   empresa: { fontSize: 15, color: "#2563eb", marginTop: 3 },
+
   infoBox: { marginVertical: 15 },
   info: { fontSize: 14, marginVertical: 3, color: "#374151" },
+
   subtitulo: {
     fontSize: 18,
     fontWeight: "bold",
@@ -151,14 +162,18 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 4,
   },
+
   texto: { fontSize: 14, color: "#374151", lineHeight: 20, marginBottom: 8 },
+
   buttonContainer: { marginTop: 20 },
   button: {
     padding: 14,
     borderRadius: 8,
     alignItems: "center",
   },
+
   buttonActive: { backgroundColor: "#2563eb" },
   buttonDisabled: { backgroundColor: "#9ca3af" },
+
   buttonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
 });
