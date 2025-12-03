@@ -35,12 +35,28 @@ export default function App() {
   const [initialRoute, setInitialRoute] = useState(null);
 
   useEffect(() => {
-    const verificarLoginSalvo = async () => {
-      const usuario = await AsyncStorage.getItem("usuarioLogado");
-      setInitialRoute(usuario ? "UsuarioComum" : "Home");
-    };
-    verificarLoginSalvo();
-  }, []);
+  const verificarLoginSalvo = async () => {
+    const dados = await AsyncStorage.getItem("usuarioLogado");
+
+    if (!dados) {
+      setInitialRoute("Home");
+      return;
+    }
+
+    const usuario = JSON.parse(dados);
+
+    if (usuario.tipo === 3) {
+      setInitialRoute("Empresa");
+    } else if (usuario.tipo === 2) {
+      setInitialRoute("AdminPanel");
+    } else if (usuario.tipo==1) {
+      setInitialRoute("UsuarioComum");
+    }
+  };
+
+  verificarLoginSalvo();
+}, []);
+
 
   if (!initialRoute) {
     return (

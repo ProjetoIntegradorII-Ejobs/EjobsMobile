@@ -88,11 +88,11 @@ const AdminController = {
     }
   },
 
-  async salvarCategoria(nome) {
+  async salvarCategoria(nome, icone) {
     try {
       const response = await api.post(
         "/api/CategoriaApiController.php?action=save",
-        JSON.stringify({ nome }),
+        JSON.stringify({ nome, icone }),
         { headers: { "Content-Type": "application/json" } }
       );
       return response.data;
@@ -140,7 +140,7 @@ const AdminController = {
     try {
       const response = await api.post(
         "/api/UsuarioApiController.php?action=alterarStatus",
-        JSON.stringify({ id, status }), // agora bate com o PHP
+        JSON.stringify({ id, status }),
         { headers: { "Content-Type": "application/json" } }
       );
       return response.data;
