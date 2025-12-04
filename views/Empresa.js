@@ -43,7 +43,8 @@ export default function Empresa({ navigation }) {
   );
 
   const handleLogout = () => {
-    Alert.alert("Sair", "Deseja realmente sair da conta?", [
+    Alert.alert("Sair", 
+      "Deseja encerrar sua sessão?", [
       { text: "Cancelar", style: "cancel" },
       {
         text: "Sair",

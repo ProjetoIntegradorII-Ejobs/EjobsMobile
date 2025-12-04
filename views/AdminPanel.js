@@ -6,8 +6,10 @@ import {
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import AdminController from "../controllers/AdminController";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -46,6 +48,28 @@ export default function AdminPanel({ navigation }) {
     carregarDashboard();
   }, []);
 
+ 
+  const handleLogout = () => {
+    Alert.alert(
+      "Sair",
+      "Deseja encerrar a sessão do administrador?",
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Sair",
+          style: "destructive",
+          onPress: async () => {
+            await AsyncStorage.removeItem("usuarioLogado");
+            navigation.reset({
+              index: 0,
+              routes: [{ name: "Home" }],
+            });
+          },
+        },
+      ]
+    );
+  };
+
   if (loading) {
     return (
       <SafeAreaView style={styles.center}>
@@ -63,10 +87,8 @@ export default function AdminPanel({ navigation }) {
       >
         <Text style={styles.titulo}>Painel Administrativo</Text>
 
-        {/* 🔹 CARDS DO DASHBOARD */}
         <View style={styles.cardContainer}>
-          
-          {/* Usuários */}
+
           <View style={styles.card}>
             <Ionicons name="people" size={40} color="#2563eb" />
             <Text style={styles.cardNumero}>{dashboard.totalUsuarios}</Text>
@@ -95,7 +117,6 @@ export default function AdminPanel({ navigation }) {
             </TouchableOpacity>
           </View>
 
-          {/* Empresas pendentes */}
           <View style={styles.card}>
             <Ionicons name="alert-circle" size={40} color="#f59e0b" />
             <Text style={styles.cardNumero}>{dashboard.totalPendentes}</Text>
@@ -110,7 +131,6 @@ export default function AdminPanel({ navigation }) {
             </TouchableOpacity>
           </View>
 
-          {/* Cargos */}
           <View style={styles.card}>
             <Ionicons name="briefcase" size={40} color="#2563eb" />
             <Text style={styles.cardNumero}>{dashboard.totalCargos}</Text>
@@ -124,22 +144,12 @@ export default function AdminPanel({ navigation }) {
               <Text style={styles.acaoTexto}>Gerenciar Cargos</Text>
             </TouchableOpacity>
           </View>
-
         </View>
 
-        <TouchableOpacity
-          style={styles.logoutBtn}
-          onPress={() => {
-            navigation.reset({
-              index: 0,
-              routes: [{ name: "Home" }],
-            });
-          }}
-        >
+        <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
           <Ionicons name="log-out-outline" size={20} color="#fff" />
           <Text style={styles.logoutTexto}>Sair</Text>
         </TouchableOpacity>
-
       </ScrollView>
     </SafeAreaView>
   );

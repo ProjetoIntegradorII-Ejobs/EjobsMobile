@@ -9,6 +9,7 @@ import {
   StatusBar,
   Image,
   ScrollView,
+  Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -27,10 +28,24 @@ export default function UsuarioComum({ navigation }) {
     }, [])
   );
 
-  const handleLogout = async () => {
-    await AsyncStorage.removeItem("usuarioLogado");
-    navigation.replace("Login");
-  };
+ const handleLogout = () => {
+  Alert.alert(
+    "Sair",
+    "Deseja encerrar sua sessão?",
+    [
+      { text: "Cancelar", style: "cancel" },
+      {
+        text: "Sair",
+        style: "destructive",
+        onPress: async () => {
+          await AsyncStorage.removeItem("usuarioLogado");
+          navigation.replace("Home");
+        },
+      },
+    ]
+  );
+};
+
 
   return (
     <SafeAreaView style={styles.safeArea}>

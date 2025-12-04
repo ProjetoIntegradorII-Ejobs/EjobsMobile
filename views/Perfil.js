@@ -10,7 +10,7 @@ import {
   ScrollView,
   Platform,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context"; // ✅ SAFE AREA REAL
+import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import UsuarioController from "../controllers/UsuarioController";
 
@@ -60,8 +60,8 @@ export default function Perfil({ navigation }) {
       id: usuario.id,
       nome: form.nome,
       telefone: form.telefone,
-      documento: form.documento,
       descricao: form.descricao,
+      documento: usuario.documento, 
     };
 
     try {
@@ -101,8 +101,7 @@ export default function Perfil({ navigation }) {
       >
         <ScrollView
           style={styles.container}
-          contentContainerStyle={{ paddingBottom: 50 }} // ⭐ evita sumir atrás do teclado
-          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 50 }}
         >
           <Text style={styles.title}>Editar Perfil</Text>
 
@@ -130,11 +129,10 @@ export default function Perfil({ navigation }) {
           />
 
           <TextInput
-            style={styles.input}
+            style={[styles.input, styles.disabledInput]}
             placeholder="Documento (CPF/CNPJ)"
-            keyboardType="numeric"
             value={form.documento}
-            onChangeText={(v) => handleChange("documento", v)}
+            editable={false}
           />
 
           <TextInput
@@ -185,6 +183,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 12,
     marginBottom: 15,
+    backgroundColor: "#fff",
   },
 
   disabledInput: {
