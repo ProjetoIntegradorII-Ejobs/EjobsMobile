@@ -9,8 +9,10 @@ import {
   ScrollView,
 } from "react-native";
 import AdminController from "../controllers/AdminController";
+import { useRoute } from "@react-navigation/native";
 
 export default function AdminCadastrarCargos({ navigation }) {
+  const route = useRoute();
   const [nome, setNome] = useState("");
 
   const salvar = async () => {
@@ -23,8 +25,12 @@ export default function AdminCadastrarCargos({ navigation }) {
 
     if (result.success) {
       Alert.alert("Sucesso", result.message);
-      setNome("");
-      navigation.goBack(); 
+
+      if (route.params?.onUpdate) {
+        route.params.onUpdate();
+      }
+
+      navigation.goBack();
     } else {
       Alert.alert("Erro", result.error || "Não foi possível salvar o cargo.");
     }
@@ -60,9 +66,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     color: "#111827",
   },
-  formGroup: {
-    marginBottom: 20,
-  },
+  formGroup: { marginBottom: 20 },
   label: {
     fontSize: 16,
     fontWeight: "bold",

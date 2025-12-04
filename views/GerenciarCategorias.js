@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -8,7 +8,8 @@ import {
   Alert,
   ActivityIndicator,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context"; 
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useFocusEffect } from "@react-navigation/native";
 import AdminController from "../controllers/AdminController";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -16,9 +17,17 @@ export default function GerenciarCategorias({ navigation }) {
   const [categorias, setCategorias] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Carrega na primeira vez
   useEffect(() => {
     carregarCategorias();
   }, []);
+
+  // 🔵 Recarrega automaticamente quando a tela volta a ficar ativa
+  useFocusEffect(
+    useCallback(() => {
+      carregarCategorias();
+    }, [])
+  );
 
   const carregarCategorias = async () => {
     setLoading(true);
@@ -76,16 +85,20 @@ export default function GerenciarCategorias({ navigation }) {
       >
         <Text style={styles.titulo}>Gerenciar Categorias</Text>
 
-
+        {/* Botão Nova Categoria */}
         <TouchableOpacity
           style={styles.btnAdd}
-          onPress={() => navigation.navigate("AdminCadastrarCategoria")}
+          onPress={() =>
+            navigation.navigate("AdminCadastrarCategoria", {
+              onUpdate: carregarCategorias, // 🟢 manda callback
+            })
+          }
         >
           <Ionicons name="add" size={20} color="#fff" />
           <Text style={styles.btnAddTexto}>Nova Categoria</Text>
         </TouchableOpacity>
 
-  
+        {/* Cabeçalho */}
         <View style={styles.header}>
           <Text style={[styles.headerText, { flex: 1 }]}>ID</Text>
           <Text style={[styles.headerText, { flex: 3 }]}>Nome</Text>
@@ -93,6 +106,7 @@ export default function GerenciarCategorias({ navigation }) {
           <Text style={[styles.headerText, { flex: 2 }]}>Ações</Text>
         </View>
 
+        {/* Lista */}
         {categorias.map((cat) => (
           <View key={cat.id} style={styles.row}>
             <Text style={[styles.rowText, { flex: 1 }]}>{cat.id}</Text>
@@ -107,6 +121,7 @@ export default function GerenciarCategorias({ navigation }) {
                     id: cat.id,
                     nome: cat.nome,
                     icone: cat.icone,
+                    onUpdate: carregarCategorias, // 🟢 update após edição
                   })
                 }
               >

@@ -141,7 +141,7 @@ export default function Empresa({ navigation }) {
           </TouchableOpacity>
         </View>
 
-        {/* LISTA DE VAGAS */}
+     
         <Text style={styles.sectionTitle}>Últimas Vagas</Text>
 
         {vagas.length === 0 ? (

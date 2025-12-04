@@ -28,7 +28,7 @@ export default function FormVagas({ navigation }) {
     status: "Ativo",
     cargo: "",
     categoria: "",
-    usuarioId: "", // empresa logada
+    usuarioId: "", 
   });
 
   const [modalidades, setModalidades] = useState([]);

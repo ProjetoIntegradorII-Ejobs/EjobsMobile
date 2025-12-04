@@ -2,18 +2,20 @@ import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
-  TextInput,
+  StyleSheet,
   TouchableOpacity,
+  ActivityIndicator,
   ScrollView,
   Alert,
-  ActivityIndicator,
-  StyleSheet,
+  TextInput,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { Picker } from "@react-native-picker/picker";
 import VagasController from "../controllers/VagasController";
 
 export default function EditarVaga({ route, navigation }) {
   const { id } = route.params;
+
   const [formData, setFormData] = useState({});
   const [loading, setLoading] = useState(true);
   const [salvando, setSalvando] = useState(false);
@@ -93,132 +95,154 @@ export default function EditarVaga({ route, navigation }) {
 
   if (loading) {
     return (
-      <View style={styles.center}>
+      <SafeAreaView style={styles.center}>
         <ActivityIndicator size="large" color="#2563eb" />
         <Text style={{ marginTop: 10 }}>Carregando vaga...</Text>
-      </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.header}>Editar Vaga</Text>
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={{ paddingBottom: 40 }}
+        showsVerticalScrollIndicator={false}
+      >
+        <Text style={styles.header}>Editar Vaga</Text>
 
-      <View style={styles.form}>
-        <Text style={styles.label}>Título</Text>
-        <TextInput
-          style={styles.input}
-          value={formData.titulo}
-          onChangeText={(text) => handleChange("titulo", text)}
-        />
+        <View style={styles.form}>
+          {/* Título */}
+          <Text style={styles.label}>Título</Text>
+          <TextInput
+            style={styles.input}
+            value={formData.titulo}
+            onChangeText={(text) => handleChange("titulo", text)}
+          />
 
-        <Text style={styles.label}>Modalidade</Text>
-        <View style={styles.pickerContainer}>
-          <Picker
-            selectedValue={formData.modalidade}
-            onValueChange={(value) => handleChange("modalidade", value)}
+          {/* Modalidade */}
+          <Text style={styles.label}>Modalidade</Text>
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={formData.modalidade}
+              onValueChange={(value) => handleChange("modalidade", value)}
+            >
+              <Picker.Item label="Selecione" value="" />
+              {modalidades.map((m, idx) => (
+                <Picker.Item key={idx} label={m} value={m} />
+              ))}
+            </Picker>
+          </View>
+
+          {/* Regime */}
+          <Text style={styles.label}>Regime</Text>
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={formData.regime}
+              onValueChange={(value) => handleChange("regime", value)}
+            >
+              <Picker.Item label="Selecione" value="" />
+              {regimes.map((r, idx) => (
+                <Picker.Item key={idx} label={r} value={r} />
+              ))}
+            </Picker>
+          </View>
+
+          {/* Horário */}
+          <Text style={styles.label}>Horário</Text>
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={formData.horario}
+              onValueChange={(value) => handleChange("horario", value)}
+            >
+              <Picker.Item label="Selecione" value="" />
+              {horarios.map((h, idx) => (
+                <Picker.Item key={idx} label={h} value={h} />
+              ))}
+            </Picker>
+          </View>
+
+          {/* Salário */}
+          <Text style={styles.label}>Salário</Text>
+          <TextInput
+            style={styles.input}
+            keyboardType="numeric"
+            value={formData.salario}
+            onChangeText={(text) => handleChange("salario", text)}
+          />
+
+          {/* Cargo */}
+          <Text style={styles.label}>Cargo</Text>
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={formData.cargo}
+              onValueChange={(value) => handleChange("cargo", value)}
+            >
+              <Picker.Item label="Selecione" value="" />
+              {cargos.map((c) => (
+                <Picker.Item key={c.id} label={c.nome} value={c.id.toString()} />
+              ))}
+            </Picker>
+          </View>
+
+          {/* Categoria */}
+          <Text style={styles.label}>Categoria</Text>
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={formData.categoria}
+              onValueChange={(value) => handleChange("categoria", value)}
+            >
+              <Picker.Item label="Selecione" value="" />
+              {categorias.map((cat) => (
+                <Picker.Item key={cat.id} label={cat.nome} value={cat.id.toString()} />
+              ))}
+            </Picker>
+          </View>
+
+          {/* Descrição */}
+          <Text style={styles.label}>Descrição</Text>
+          <TextInput
+            style={[styles.input, { height: 100 }]}
+            multiline
+            value={formData.descricao}
+            onChangeText={(text) => handleChange("descricao", text)}
+          />
+
+          {/* Requisitos */}
+          <Text style={styles.label}>Requisitos</Text>
+          <TextInput
+            style={[styles.input, { height: 100 }]}
+            multiline
+            value={formData.requisitos}
+            onChangeText={(text) => handleChange("requisitos", text)}
+          />
+
+          {/* Botão salvar */}
+          <TouchableOpacity
+            style={styles.botaoSalvar}
+            onPress={handleSalvar}
+            disabled={salvando}
           >
-            <Picker.Item label="Selecione" value="" />
-            {modalidades.map((m, idx) => (
-              <Picker.Item key={idx} label={m} value={m} />
-            ))}
-          </Picker>
+            <Text style={styles.botaoTexto}>
+              {salvando ? "Salvando..." : "Salvar Alterações"}
+            </Text>
+          </TouchableOpacity>
         </View>
-
-        <Text style={styles.label}>Regime</Text>
-        <View style={styles.pickerContainer}>
-          <Picker
-            selectedValue={formData.regime}
-            onValueChange={(value) => handleChange("regime", value)}
-          >
-            <Picker.Item label="Selecione" value="" />
-            {regimes.map((r, idx) => (
-              <Picker.Item key={idx} label={r} value={r} />
-            ))}
-          </Picker>
-        </View>
-
-        <Text style={styles.label}>Horário</Text>
-        <View style={styles.pickerContainer}>
-          <Picker
-            selectedValue={formData.horario}
-            onValueChange={(value) => handleChange("horario", value)}
-          >
-            <Picker.Item label="Selecione" value="" />
-            {horarios.map((h, idx) => (
-              <Picker.Item key={idx} label={h} value={h} />
-            ))}
-          </Picker>
-        </View>
-
-        <Text style={styles.label}>Salário</Text>
-        <TextInput
-          style={styles.input}
-          keyboardType="numeric"
-          value={formData.salario}
-          onChangeText={(text) => handleChange("salario", text)}
-        />
-
-        <Text style={styles.label}>Cargo</Text>
-        <View style={styles.pickerContainer}>
-          <Picker
-            selectedValue={formData.cargo}
-            onValueChange={(value) => handleChange("cargo", value)}
-          >
-            <Picker.Item label="Selecione" value="" />
-            {cargos.map((c) => (
-              <Picker.Item key={c.id} label={c.nome} value={c.id.toString()} />
-            ))}
-          </Picker>
-        </View>
-
-        <Text style={styles.label}>Categoria</Text>
-        <View style={styles.pickerContainer}>
-          <Picker
-            selectedValue={formData.categoria}
-            onValueChange={(value) => handleChange("categoria", value)}
-          >
-            <Picker.Item label="Selecione" value="" />
-            {categorias.map((cat) => (
-              <Picker.Item key={cat.id} label={cat.nome} value={cat.id.toString()} />
-            ))}
-          </Picker>
-        </View>
-
-        {/* Descrição */}
-        <Text style={styles.label}>Descrição</Text>
-        <TextInput
-          style={[styles.input, { height: 100 }]}
-          multiline
-          value={formData.descricao}
-          onChangeText={(text) => handleChange("descricao", text)}
-        />
-
-        <Text style={styles.label}>Requisitos</Text>
-        <TextInput
-          style={[styles.input, { height: 80 }]}
-          multiline
-          value={formData.requisitos}
-          onChangeText={(text) => handleChange("requisitos", text)}
-        />
-
-        <TouchableOpacity
-          style={styles.botaoSalvar}
-          onPress={handleSalvar}
-          disabled={salvando}
-        >
-          <Text style={styles.botaoTexto}>
-            {salvando ? "Salvando..." : "Salvar Alterações"}
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#fff",
+  },
+
   container: { flex: 1, backgroundColor: "#fff", padding: 15 },
+
   center: { flex: 1, justifyContent: "center", alignItems: "center" },
+
   header: {
     fontSize: 22,
     fontWeight: "bold",
@@ -226,8 +250,15 @@ const styles = StyleSheet.create({
     color: "#111827",
     marginBottom: 20,
   },
+
   form: { marginBottom: 30 },
-  label: { fontWeight: "bold", marginBottom: 4, color: "#111827" },
+
+  label: {
+    fontWeight: "bold",
+    marginBottom: 4,
+    color: "#111827",
+  },
+
   input: {
     borderWidth: 1,
     borderColor: "#d1d5db",
@@ -235,12 +266,14 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 12,
   },
+
   pickerContainer: {
     borderWidth: 1,
     borderColor: "#d1d5db",
     borderRadius: 8,
     marginBottom: 12,
   },
+
   botaoSalvar: {
     backgroundColor: "#2563eb",
     padding: 14,
@@ -248,5 +281,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 10,
   },
-  botaoTexto: { color: "#fff", fontWeight: "bold", fontSize: 16 },
+
+  botaoTexto: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
 });

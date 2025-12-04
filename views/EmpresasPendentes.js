@@ -33,15 +33,32 @@ export default function EmpresasPendentes({ navigation }) {
   }
 
   async function aprovar(id) {
-    const result = await AdminController.aprovarEmpresa(id);
+  Alert.alert(
+    "Confirmar Aprovação",
+    "Tem certeza que deseja aprovar esta empresa?",
+    [
+      {
+        text: "Cancelar",
+        style: "cancel",
+      },
+      {
+        text: "Aprovar",
+        style: "default",
+        onPress: async () => {
+          const result = await AdminController.aprovarEmpresa(id);
 
-    if (result.success) {
-      Alert.alert("Sucesso", result.message);
-      carregar();
-    } else {
-      Alert.alert("Erro", "Falha ao aprovar empresa.");
-    }
-  }
+          if (result.success) {
+            Alert.alert("Sucesso", result.message);
+            carregar();
+          } else {
+            Alert.alert("Erro", "Falha ao aprovar empresa.");
+          }
+        },
+      },
+    ]
+  );
+}
+
 
   if (loading) {
     return (

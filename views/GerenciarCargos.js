@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -10,14 +10,23 @@ import {
 } from "react-native";
 import AdminController from "../controllers/AdminController";
 import { Ionicons } from "@expo/vector-icons";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function GerenciarCargos({ navigation }) {
   const [cargos, setCargos] = useState([]);
   const [loading, setLoading] = useState(true);
 
+
   useEffect(() => {
     carregarCargos();
   }, []);
+
+
+  useFocusEffect(
+    useCallback(() => {
+      carregarCargos();
+    }, [])
+  );
 
   const carregarCargos = async () => {
     setLoading(true);
@@ -69,7 +78,11 @@ export default function GerenciarCargos({ navigation }) {
       {/* Botão Novo */}
       <TouchableOpacity
         style={styles.btnAdd}
-        onPress={() => navigation.navigate("AdminCadastrarCargos")}
+        onPress={() =>
+          navigation.navigate("AdminCadastrarCargos", {
+            onUpdate: carregarCargos,
+          })
+        }
       >
         <Ionicons name="add" size={20} color="#fff" />
         <Text style={styles.btnAddTexto}>Novo Cargo</Text>
@@ -95,6 +108,7 @@ export default function GerenciarCargos({ navigation }) {
                 navigation.navigate("AdminEditarCargo", {
                   id: cargo.id,
                   nome: cargo.nome,
+                  onUpdate: carregarCargos,
                 })
               }
             >
@@ -134,6 +148,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginBottom: 20,
   },
+
   btnAddTexto: {
     color: "#fff",
     fontWeight: "bold",
@@ -148,6 +163,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
     borderRadius: 8,
   },
+
   headerText: {
     fontSize: 14,
     fontWeight: "bold",
@@ -161,6 +177,7 @@ const styles = StyleSheet.create({
     borderColor: "#e5e7eb",
     alignItems: "center",
   },
+
   rowText: {
     fontSize: 15,
     color: "#374151",
@@ -181,6 +198,7 @@ const styles = StyleSheet.create({
   editBtn: {
     backgroundColor: "#2563eb",
   },
+
   deleteBtn: {
     backgroundColor: "#dc2626",
   },

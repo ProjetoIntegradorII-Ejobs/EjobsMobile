@@ -12,6 +12,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import AdminController from "../controllers/AdminController";
 import { Ionicons } from "@expo/vector-icons";
+import { useFocusEffect } from "@react-navigation/native";
+import { useCallback } from "react";
+
 
 export default function AdminPanel({ navigation }) {
   const [loading, setLoading] = useState(true);
@@ -23,30 +26,41 @@ export default function AdminPanel({ navigation }) {
     totalPendentes: 0,
   });
 
-  useEffect(() => {
-    async function carregarDashboard() {
-      try {
-        const usuarios = await AdminController.listarUsuarios();
-        const categorias = await AdminController.listarCategorias();
-        const cargos = await AdminController.listarCargos();
-        const pendentes =
-          (await AdminController.listarEmpresasPendentes?.()) || [];
+  async function carregarDashboard() {
+    try {
+      setLoading(true);
 
-        setDashboard({
-          totalUsuarios: usuarios?.usuarios?.length || 0,
-          totalCategorias: categorias?.categorias?.length || 0,
-          totalCargos: cargos?.cargos?.length || 0,
-          totalPendentes: pendentes.length || 0,
-        });
-      } catch (e) {
-        console.error("Erro ao carregar admin dashboard:", e);
-      } finally {
-        setLoading(false);
-      }
+      const usuarios = await AdminController.listarUsuarios();
+      const categorias = await AdminController.listarCategorias();
+      const cargos = await AdminController.listarCargos();
+      const pendentes =
+        (await AdminController.listarEmpresasPendentes?.())?.usuarios || [];
+
+      setDashboard({
+        totalUsuarios: usuarios?.usuarios?.length || 0,
+        totalCategorias: categorias?.categorias?.length || 0,
+        totalCargos: cargos?.cargos?.length || 0,
+        totalPendentes: pendentes.length || 0,
+      });
+    } catch (e) {
+      console.error("Erro ao carregar admin dashboard:", e);
+    } finally {
+      setLoading(false);
     }
+  }
 
+
+  useEffect(() => {
     carregarDashboard();
   }, []);
+
+
+  useFocusEffect(
+    useCallback(() => {
+      carregarDashboard();
+    }, [])
+  );
+
 
  
   const handleLogout = () => {
