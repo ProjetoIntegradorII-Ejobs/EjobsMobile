@@ -153,6 +153,7 @@ export default function App() {
         <Stack.Screen
           name="AdminCadastrarCargos"
           component={AdminCadastrarCargos}
+          options={{ headerShown: false }}
         />
         <Stack.Screen
           name="AdminEditarCargo"
@@ -162,21 +163,27 @@ export default function App() {
         <Stack.Screen
           name="AdminCadastrarCategoria"
           component={AdminCadastrarCategoria}
+          options={{ headerShown: false }}
         />
         <Stack.Screen
           name="AdminEditarCategoria"
           component={AdminEditarCategoria}
+          options={{ headerShown: false }}
         />
         <Stack.Screen 
           name="ListNotificacao" 
-          component={ListNotificacao} />
+          component={ListNotificacao} 
+           options={{ headerShown: false }}
+           />
         <Stack.Screen
           name="NotificacaoDetalhes"
           component={NotificacaoDetalhes}
+           options={{ headerShown: false }}
         />
         <Stack.Screen 
           name="GerenciarUsuarios" 
-          component={GerenciarUsuarios} />
+          component={GerenciarUsuarios} 
+           options={{ headerShown: false }}/>
         <Stack.Screen
           name="EmpresasPendentes"
           component={EmpresasPendentes}
