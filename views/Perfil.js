@@ -21,6 +21,7 @@ export default function Perfil({ navigation }) {
   const [form, setForm] = useState({
     nome: "",
     telefone: "",
+    documento: "",
     descricao: "",
   });
 
@@ -31,15 +32,14 @@ export default function Perfil({ navigation }) {
       const dados = await AsyncStorage.getItem("usuarioLogado");
       if (dados) {
         const user = JSON.parse(dados);
-
-        console.log("🔥 Usuario logado:", user);
-
         setUsuario(user);
+
         setEmail(user.email || "");
 
         setForm({
           nome: user.nome || "",
           telefone: user.telefone || "",
+          documento: user.documento || "",
           descricao: user.descricao || "",
         });
       }
@@ -54,7 +54,6 @@ export default function Perfil({ navigation }) {
 
   const handleSalvar = async () => {
     if (!usuario) return;
-
     setSalvando(true);
 
     const dadosAtualizados = {
@@ -62,11 +61,8 @@ export default function Perfil({ navigation }) {
       nome: form.nome,
       telefone: form.telefone,
       descricao: form.descricao,
+      documento: usuario.documento, 
     };
-
-    // 🚫 Nunca enviar documento no update
-    // 🚫 Nunca enviar email
-    // Ambos ficam congelados
 
     try {
       const result = await UsuarioController.update(dadosAtualizados);
@@ -81,9 +77,9 @@ export default function Perfil({ navigation }) {
 
         Alert.alert("Sucesso", "Dados atualizados com sucesso!");
       }
-    } catch (e) {
-      console.error(e);
-      Alert.alert("Erro", "Falha ao comunicar com o servidor.");
+    } catch (error) {
+      Alert.alert("Erro", "Falha na comunicação com o servidor.");
+      console.error(error);
     } finally {
       setSalvando(false);
     }
@@ -92,7 +88,7 @@ export default function Perfil({ navigation }) {
   if (!usuario) {
     return (
       <SafeAreaView style={styles.center}>
-        <Text>Carregando...</Text>
+        <Text>Carregando dados...</Text>
       </SafeAreaView>
     );
   }
@@ -103,10 +99,12 @@ export default function Perfil({ navigation }) {
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
-        <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 50 }}>
+        <ScrollView
+          style={styles.container}
+          contentContainerStyle={{ paddingBottom: 50 }}
+        >
           <Text style={styles.title}>Editar Perfil</Text>
 
-          {/* EMAIL - sempre congelado */}
           <TextInput
             style={[styles.input, styles.disabledInput]}
             placeholder="Email"
@@ -114,7 +112,6 @@ export default function Perfil({ navigation }) {
             editable={false}
           />
 
-          {/* NOME - editável */}
           <TextInput
             style={styles.input}
             placeholder="Nome"
@@ -122,7 +119,6 @@ export default function Perfil({ navigation }) {
             onChangeText={(v) => handleChange("nome", v)}
           />
 
-          {/* TELEFONE - editável */}
           <TextInput
             style={styles.input}
             placeholder="Telefone"
@@ -131,29 +127,26 @@ export default function Perfil({ navigation }) {
             onChangeText={(v) => handleChange("telefone", v)}
           />
 
-          {/* DOCUMENTO - sempre congelado */}
           <TextInput
             style={[styles.input, styles.disabledInput]}
-            placeholder="Documento"
+            placeholder="Documento (CPF/CNPJ)"
+            value={form.documento}
             editable={false}
-            value={usuario.documento}
           />
 
-          {/* DESCRIÇÃO */}
           <TextInput
             style={[styles.input, styles.textArea]}
-            placeholder="Descrição"
-            multiline
-            numberOfLines={4}
+            placeholder="Descrição "
             value={form.descricao}
             onChangeText={(v) => handleChange("descricao", v)}
+            multiline
+            numberOfLines={4}
           />
 
-          {/* BOTÃO SALVAR */}
           <TouchableOpacity
-            style={[styles.button, salvando && { opacity: 0.6 }]}
-            disabled={salvando}
+            style={[styles.button, salvando && { opacity: 0.5 }]}
             onPress={handleSalvar}
+            disabled={salvando}
           >
             <Text style={styles.buttonText}>
               {salvando ? "Salvando..." : "Salvar Alterações"}
@@ -171,34 +164,51 @@ export default function Perfil({ navigation }) {
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: "#fff" },
+
   container: { flex: 1, padding: 20, backgroundColor: "#fff" },
+
   center: { flex: 1, justifyContent: "center", alignItems: "center" },
-  title: { fontSize: 22, fontWeight: "bold", color: "#2563eb", marginBottom: 20 },
+
+  title: {
+    fontSize: 22,
+    fontWeight: "bold",
+    color: "#2563eb",
+    marginBottom: 20,
+  },
+
   input: {
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 8,
     padding: 12,
     marginBottom: 15,
+    backgroundColor: "#fff",
   },
+
   disabledInput: {
     backgroundColor: "#e5e7eb",
     color: "#6b7280",
   },
+
   textArea: {
     height: 100,
     textAlignVertical: "top",
   },
+
   button: {
     backgroundColor: "#2563eb",
     padding: 14,
     borderRadius: 8,
     alignItems: "center",
+    marginTop: 10,
   },
+
   buttonText: {
     color: "#fff",
+    fontSize: 16,
     fontWeight: "bold",
   },
+
   backText: {
     marginTop: 15,
     color: "#2563eb",

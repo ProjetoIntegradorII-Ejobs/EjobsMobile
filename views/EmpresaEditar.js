@@ -118,9 +118,9 @@ export default function EmpresaEditar({ navigation }) {
       />
 
       <TextInput
-        style={styles.input}
+        style={[styles.input, styles.disabled]}
         value={form.documento}
-        onChangeText={(v) => handleChange("documento", v)}
+        editable={false}
         placeholder="CNPJ"
       />
 
