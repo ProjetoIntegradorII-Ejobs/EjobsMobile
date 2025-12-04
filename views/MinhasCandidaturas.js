@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";  // ✅ IMPORTAÇÃO CORRETA
+import { SafeAreaView } from "react-native-safe-area-context"; 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CandidaturaController from "../controllers/CandidaturaController";
 
@@ -95,12 +95,12 @@ export default function MinhasCandidaturas({ navigation }) {
             <Text
               style={[
                 styles.status,
-                item.status === "FINALIZADO"
-                  ? styles.statusFinalizado
+                item.status === "APROVADO"
+                  ? styles.statusAprovado
                   : styles.statusAndamento,
               ]}
             >
-              {item.status === "FINALIZADO" ? "Finalizado" : "Em andamento"}
+              {item.status === "APROVADO" ? "Aprovado" : "Em andamento"}
             </Text>
 
             <View style={styles.btnContainer}>
@@ -113,14 +113,6 @@ export default function MinhasCandidaturas({ navigation }) {
                 <Text style={styles.btnDetalhesTexto}>Ver detalhes</Text>
               </TouchableOpacity>
 
-              {item.status !== "FINALIZADO" && (
-                <TouchableOpacity
-                  style={styles.btnCancelar}
-                  onPress={() => cancelarCandidatura(item.id)}
-                >
-                  <Text style={styles.btnCancelarTexto}>Cancelar</Text>
-                </TouchableOpacity>
-              )}
             </View>
           </View>
         )}
@@ -155,8 +147,8 @@ const styles = StyleSheet.create({
   data: { color: "#6b7280", fontSize: 13, marginTop: 4 },
 
   status: { marginTop: 6, fontWeight: "bold", textAlign: "right" },
-  statusAndamento: { color: "#10b981" },
-  statusFinalizado: { color: "#ef4444" },
+  statusAndamento: { color: "#2563eb" },
+  statusAprovado: { color: "#10b981" },
 
   btnContainer: {
     flexDirection: "row",
