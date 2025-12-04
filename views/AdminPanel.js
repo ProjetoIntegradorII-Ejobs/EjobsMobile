@@ -105,8 +105,8 @@ export default function AdminPanel({ navigation }) {
 
           <View style={styles.card}>
             <Ionicons name="people" size={40} color="#2563eb" />
-            <Text style={styles.cardNumero}>{dashboard.totalUsuarios}</Text>
-            <Text style={styles.cardLabel}>Total de Usuários</Text>
+            
+            
 
             <TouchableOpacity
               style={styles.botao}
