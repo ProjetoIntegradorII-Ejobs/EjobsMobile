@@ -168,7 +168,11 @@ export default function EditarVaga({ route, navigation }) {
             style={styles.input}
             keyboardType="numeric"
             value={formData.salario}
-            onChangeText={(text) => handleChange("salario", text)}
+            onChangeText={(text) => {
+                  //RN 10 - O campo “salário” não pode receber valores negativos 
+                  if (text.includes("-")) return; 
+                  handleChange("salario", text);
+                }}
           />
 
           {/* Cargo */}

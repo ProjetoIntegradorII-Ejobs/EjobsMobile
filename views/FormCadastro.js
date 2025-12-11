@@ -106,6 +106,19 @@ export default function Cadastrar({ navigation }) {
       return Alert.alert('Erro', 'As senhas não conferem.');
     }
 
+    // RN 11 - A senha de um usuário deve possuir no mínimo 6 caracteres e um caracter especial
+    if (formData.senha.length < 6) {
+      return Alert.alert('Erro', 'A senha deve ter no mínimo 6 caracteres.');
+    }
+
+    const regexEspecial = /[^A-Za-z0-9]/;
+    if (!regexEspecial.test(formData.senha)) {
+      return Alert.alert(
+        'Erro',
+        'A senha deve conter ao menos um caractere especial.'
+      );
+    }
+
     try {
       const result = await CadastroController.register(formData);
 
@@ -160,9 +173,10 @@ export default function Cadastrar({ navigation }) {
           </View>
 
           <View style={cadastroStyles.formContainer}>
-            <Text style={cadastroStyles.sectionTitle}>Preencha os dados abaixo</Text>
+            <Text style={cadastroStyles.sectionTitle}>
+              Preencha os dados abaixo
+            </Text>
 
-       
             <View style={cadastroStyles.inputGroup}>
               <Text style={cadastroStyles.label}>
                 Papel<Text style={cadastroStyles.requiredIndicator}> *</Text>
@@ -175,7 +189,11 @@ export default function Cadastrar({ navigation }) {
                 >
                   <Picker.Item label="Selecione" value="" />
                   {papeis.map((papel) => (
-                    <Picker.Item key={papel.id} label={papel.nome} value={papel.id.toString()} />
+                    <Picker.Item
+                      key={papel.id}
+                      label={papel.nome}
+                      value={papel.id.toString()}
+                    />
                   ))}
                 </Picker>
               </View>
@@ -298,7 +316,9 @@ export default function Cadastrar({ navigation }) {
                             setShowList(false);
                           }}
                         >
-                          <Text>{item.nome} - {item.uf}</Text>
+                          <Text>
+                            {item.nome} - {item.uf}
+                          </Text>
                         </TouchableOpacity>
                       ))}
                     </ScrollView>
@@ -359,7 +379,6 @@ export default function Cadastrar({ navigation }) {
               <Text style={cadastroStyles.buttonText}>Cadastrar</Text>
             </TouchableOpacity>
 
-            {/* Login */}
             <View style={{ marginTop: 16, alignItems: 'center' }}>
               <Text>
                 Já tem conta?{' '}
@@ -371,7 +390,6 @@ export default function Cadastrar({ navigation }) {
                 </Text>
               </Text>
             </View>
-
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
